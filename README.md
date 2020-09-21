@@ -22,3 +22,35 @@ Options:
   --persist-on-error        Saves the generated *.auto.ts file on error
   --verbose                 Be explicit about what's going on
 ```
+
+# Validation Example
+
+There is a sample LHC Form JSON file `test1.lhc-form.json` which has forced error. 
+If you run the validator, it should give you a proper error message:
+
+```bash
+❯ deno-run lformctl.ts validate test1.lhc-form.json
+TS2322 [ERROR]: Type 'string' is not assignable to type 'number'.
+        min: 'bad data',
+        ~~~
+    at /test1.lhc-form.auto.ts:12:9
+```
+
+# Convert LHC Form JSON to Typed Data Gen (TDG) TypeScript
+
+You can take the LHC Form JSON file `test1.lhc-form.json` and generate an editable
+TypeScript file from it:
+
+```bash
+❯ deno-run lformctl.ts json-to-tdg-ts test1.lhc-form.json --verbose
+Created test1.lhc-form.auto.ts
+> deno fmt test1.lhc-form.auto.ts
+```
+
+If you want to give it a different name, use:
+
+```bash
+❯ deno-run lformctl.ts json-to-tdg-ts test1.lhc-form.json myfile --verbose
+Created myfile.ts
+> deno fmt myfile.ts
+```
