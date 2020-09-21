@@ -1,3 +1,5 @@
+import * as typedDataGen from "https://denopkg.com/shah/tsd-typed-data-gen/mod.ts";
+
 import type * as lform from "./lform.ts";
 
 export const form: lform.NihLhcForm = {
@@ -704,5 +706,6 @@ export const form: lform.NihLhcForm = {
     showColumnHeaders: false,
   },
 };
-
-export default form;
+if (import.meta.main) {
+  new typedDataGen.CliArgsEmitter(import.meta.url).emitJSON(form);
+}

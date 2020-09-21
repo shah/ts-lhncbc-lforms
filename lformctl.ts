@@ -84,8 +84,12 @@ export async function jsonToTypedDataGenHandler(
       moduleName: moduleName,
       jsonContentFileName: lhcFormJsonFileName.toString(),
     });
-    const writtenToFile = lhcFormJsonModule.persistGeneratedSrcCode(moduleName);
-    if (verbose) console.log(`Created ${writtenToFile}`);
+    const writtenToFile = lhcFormJsonModule.persistTypedDataGenCode(moduleName);
+    if (verbose) {
+      console.log(
+        `Created ${writtenToFile}, run 'deno fmt ${writtenToFile}' to format it.`,
+      );
+    }
     return true;
   }
 }
