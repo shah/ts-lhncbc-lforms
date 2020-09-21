@@ -43,14 +43,16 @@ TypeScript file from it:
 
 ```bash
 ❯ deno-run lformctl.ts json-to-tdg-ts test1-with-error.lhc-form.json --verbose
-Created test1-with-error.lhc-form.auto.ts
-❯ deno fmt test1-with-error.lhc-form.auto.ts
+Created test1-with-error.lhc-form.auto.tdg.ts, run 'deno fmt test1-with-error.lhc-form.auto.tdg.ts' to format it.
+
+❯ deno fmt test1-with-error.lhc-form.auto.tdg.ts
 ```
 
 If you want to give it a different name, use:
 
 ```bash
 ❯ deno-run lformctl.ts json-to-tdg-ts test1-with-error.lhc-form.json myfile --verbose
-Created myfile.ts
-❯ deno fmt myfile.ts
+Created myfile.tdg.ts, run 'deno fmt myfile.tdg.ts' to format it.
+
+❯ deno fmt myfile.tdg.ts
 ```

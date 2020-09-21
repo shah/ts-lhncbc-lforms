@@ -74,9 +74,9 @@ export async function jsonToTypedDataGenHandler(
   } = options;
   if (jsonToTDG && lhcFormJsonFileName) {
     const moduleName = lhcFormTdgTsFileName
-      ? tdg.forceExtension(".ts", lhcFormTdgTsFileName.toString())
+      ? tdg.forceExtension(".tdg.ts", lhcFormTdgTsFileName.toString())
       : tdg.forceExtension(
-        ".auto.ts",
+        ".auto.tdg.ts",
         lhcFormJsonFileName.toString(),
       );
     const lhcFormJsonModule = new tdg.JsonModule({
