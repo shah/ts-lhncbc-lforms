@@ -9,6 +9,7 @@ LHC Form Controller.
 
 Usage:
   lformctl.ts validate <lhc-json-file> [--persist-on-error] [--verbose]
+  lformctl.ts json-to-tdg-ts <lhc-json-file> [<lhc-tdg-ts-file>] [--verbose]
   lformctl.ts -h | --help
   lformctl.ts --version
 
@@ -16,6 +17,7 @@ Options:
   -h --help                 Show this screen
   --version                 Show version
   <lhc-json-file>           LHC Form JSON file name (can be local or URL)
+  <lhc-tdg-ts-file>         LHC Form Typed Data Gen (TDG) TypeScript file name
   --persist-on-error        Saves the generated *.auto.ts file on error
   --verbose                 Be explicit about what's going on
 `;
@@ -61,9 +63,37 @@ export async function validationHandler(
   }
 }
 
+export async function jsonToTypedDataGenHandler(
+  options: DocOptions,
+): Promise<true | void> {
+  const {
+    "json-to-tdg-ts": jsonToTDG,
+    "<lhc-json-file>": lhcFormJsonFileName,
+    "<lhc-tdg-ts-file>": lhcFormTdgTsFileName,
+    "--verbose": verbose,
+  } = options;
+  if (jsonToTDG && lhcFormJsonFileName) {
+    const moduleName = lhcFormTdgTsFileName
+      ? tdg.forceExtension(".ts", lhcFormTdgTsFileName.toString())
+      : tdg.forceExtension(
+        ".auto.ts",
+        lhcFormJsonFileName.toString(),
+      );
+    const lhcFormJsonModule = new tdg.JsonModule({
+      ...mod.LhcFormJsonModule.defaultOptions,
+      moduleName: moduleName,
+      jsonContentFileName: lhcFormJsonFileName.toString(),
+    });
+    const writtenToFile = lhcFormJsonModule.persistGeneratedSrcCode(moduleName);
+    if (verbose) console.log(`Created ${writtenToFile}`);
+    return true;
+  }
+}
+
 if (import.meta.main) {
   const handlers: CommandHandler[] = [
     validationHandler,
+    jsonToTypedDataGenHandler,
   ];
   try {
     const options = docopt(docoptSpec);
