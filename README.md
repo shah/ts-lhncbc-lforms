@@ -44,7 +44,7 @@ TypeScript file from it:
 ```bash
 ❯ deno-run lformctl.ts json-to-tdg-ts test1.lhc-form.json --verbose
 Created test1.lhc-form.auto.ts
-> deno fmt test1.lhc-form.auto.ts
+❯ deno fmt test1.lhc-form.auto.ts
 ```
 
 If you want to give it a different name, use:
@@ -52,5 +52,5 @@ If you want to give it a different name, use:
 ```bash
 ❯ deno-run lformctl.ts json-to-tdg-ts test1.lhc-form.json myfile --verbose
 Created myfile.ts
-> deno fmt myfile.ts
+❯ deno fmt myfile.ts
 ```
