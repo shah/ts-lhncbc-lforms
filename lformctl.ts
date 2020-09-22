@@ -8,8 +8,8 @@ const docoptSpec = `
 LHC Form Controller.
 
 Usage:
-  lformctl.ts validate <lhc-json-file> [--persist-on-error] [--verbose]
-  lformctl.ts json-to-tdg-ts <lhc-json-file> [<lhc-tdg-ts-file>] [--verbose]
+  lformctl.ts validate <lhc-json-file> [--url-exec] [--persist-on-error] [--verbose]
+  lformctl.ts json-to-tdg-ts <lhc-json-file> [--url-exec] [<lhc-tdg-ts-file>] [--verbose]
   lformctl.ts -h | --help
   lformctl.ts --version
 
@@ -18,6 +18,7 @@ Options:
   --version                 Show version
   <lhc-json-file>           LHC Form JSON file name (can be local or URL)
   <lhc-tdg-ts-file>         LHC Form Typed Data Gen (TDG) TypeScript file name
+  --url-exec                If not running from local repo, set this flag
   --persist-on-error        Saves the generated *.auto.ts file on error
   --verbose                 Be explicit about what's going on
 `;
@@ -32,6 +33,7 @@ export async function validationHandler(
   const {
     validate,
     "<lhc-json-file>": lhcFormJsonFileName,
+    "--url-exec": urlExec,
     "--persist-on-error": persistOnError,
     "--verbose": verbose,
   } = options;
@@ -40,8 +42,10 @@ export async function validationHandler(
       ".auto.ts",
       lhcFormJsonFileName.toString(),
     );
-    const lhcFormJsonModule = new tdg.JsonModule({
-      ...mod.LhcFormJsonModule.defaultOptions,
+    const lhcFormJsonModule = new mod.LhcFormJsonModule({
+      ...(urlExec
+        ? mod.LhcFormJsonModule.gitHubUrlOptions
+        : mod.LhcFormJsonModule.localFsOptions),
       moduleName: moduleName,
       jsonContentFileName: lhcFormJsonFileName.toString(),
     });
@@ -70,6 +74,7 @@ export async function jsonToTypedDataGenHandler(
     "json-to-tdg-ts": jsonToTDG,
     "<lhc-json-file>": lhcFormJsonFileName,
     "<lhc-tdg-ts-file>": lhcFormTdgTsFileName,
+    "--url-exec": urlExec,
     "--verbose": verbose,
   } = options;
   if (jsonToTDG && lhcFormJsonFileName) {
@@ -79,8 +84,10 @@ export async function jsonToTypedDataGenHandler(
         ".auto.tdg.ts",
         lhcFormJsonFileName.toString(),
       );
-    const lhcFormJsonModule = new tdg.JsonModule({
-      ...mod.LhcFormJsonModule.defaultOptions,
+    const lhcFormJsonModule = new mod.LhcFormJsonModule({
+      ...(urlExec
+        ? mod.LhcFormJsonModule.gitHubUrlOptions
+        : mod.LhcFormJsonModule.localFsOptions),
       moduleName: moduleName,
       jsonContentFileName: lhcFormJsonFileName.toString(),
     });
