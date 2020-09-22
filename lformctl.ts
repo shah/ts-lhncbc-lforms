@@ -43,9 +43,7 @@ export async function validationHandler(
       lhcFormJsonFileName.toString(),
     );
     const lhcFormJsonModule = new mod.LhcFormJsonModule({
-      ...(urlExec
-        ? mod.LhcFormJsonModule.gitHubUrlOptions
-        : mod.LhcFormJsonModule.localFsOptions),
+      ...mod.defaultLhcFormJsonModuleOptions,
       moduleName: moduleName,
       jsonContentFileName: lhcFormJsonFileName.toString(),
     });
@@ -85,9 +83,7 @@ export async function jsonToTypedDataGenHandler(
         lhcFormJsonFileName.toString(),
       );
     const lhcFormJsonModule = new mod.LhcFormJsonModule({
-      ...(urlExec
-        ? mod.LhcFormJsonModule.gitHubUrlOptions
-        : mod.LhcFormJsonModule.localFsOptions),
+      ...mod.defaultLhcFormJsonModuleOptions,
       moduleName: moduleName,
       jsonContentFileName: lhcFormJsonFileName.toString(),
     });

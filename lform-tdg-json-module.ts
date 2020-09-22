@@ -1,4 +1,4 @@
-import { typedDataGen as tdg } from "./deps.ts";
+import { fs, typedDataGen as tdg } from "./deps.ts";
 
 export async function gitHubLformTsSourceCode(): Promise<tdg.SourceCode> {
   const lformTsUrl = new URL(
@@ -19,32 +19,21 @@ export async function gitHubLformTsSourceCode(): Promise<tdg.SourceCode> {
   };
 }
 
-const gitHubLformTsCode = await gitHubLformTsSourceCode();
+export const defaultLhcFormJsonModuleOptions = {
+  imports: [
+    {
+      denoCompilerSrcKey: "/lform.ts",
+      typeScriptImportRef: `import type * as lform from "./lform.ts"`,
+      importedRefSourceCode: fs.existsSync("./lform.ts")
+        ? new tdg.TextFileSourceCode(
+          "./lform.ts",
+        )
+        : await gitHubLformTsSourceCode(),
+    },
+  ],
+  primaryConstName: "form",
+  primaryConstTsType: "lform.NihLhcForm",
+};
 
 export class LhcFormJsonModule extends tdg.JsonModule {
-  static readonly localFsOptions = {
-    imports: [
-      {
-        denoCompilerSrcKey: "/lform.ts",
-        typeScriptImportRef: `import type * as lform from "./lform.ts"`,
-        importedRefSourceCode: new tdg.TextFileSourceCode(
-          "./lform.ts",
-        ),
-      },
-    ],
-    primaryConstName: "form",
-    primaryConstTsType: "lform.NihLhcForm",
-  };
-
-  static readonly gitHubUrlOptions = {
-    imports: [
-      {
-        denoCompilerSrcKey: "/lform.ts",
-        typeScriptImportRef: `import type * as lform from "./lform.ts"`,
-        importedRefSourceCode: gitHubLformTsCode,
-      },
-    ],
-    primaryConstName: "form",
-    primaryConstTsType: "lform.NihLhcForm",
-  };
 }
