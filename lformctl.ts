@@ -8,19 +8,19 @@ const docoptSpec = `
 LHC Form Controller.
 
 Usage:
-  lformctl.ts validate <lhc-json-file> [--url-exec] [--persist-on-error] [--verbose]
-  lformctl.ts json-to-tdg-ts <lhc-json-file> [--url-exec] [<lhc-tdg-ts-file>] [--verbose]
+  lformctl.ts validate <lhc-json-file> [--lform-schema-ts=<url>] [--persist-on-error] [--verbose]
+  lformctl.ts json-to-tdg-ts <lhc-json-file> [--lform-schema-ts=<url>] [<lhc-tdg-ts-file>] [--verbose]
   lformctl.ts -h | --help
   lformctl.ts --version
 
 Options:
-  -h --help                 Show this screen
-  --version                 Show version
-  <lhc-json-file>           LHC Form JSON file name (can be local or URL)
-  <lhc-tdg-ts-file>         LHC Form Typed Data Gen (TDG) TypeScript file name
-  --url-exec                If not running from local repo, set this flag
-  --persist-on-error        Saves the generated *.auto.ts file on error
-  --verbose                 Be explicit about what's going on
+  -h --help                   Show this screen
+  --version                   Show version
+  <lhc-json-file>             LHC Form JSON file name (can be local or URL)
+  <lhc-tdg-ts-file>           LHC Form Typed Data Gen (TDG) TypeScript file name
+  --lform-schema-ts=<url>     Where the lform.ts TypeScript schema can be found
+  --persist-on-error          Saves the generated *.auto.ts file on error
+  --verbose                   Be explicit about what's going on
 `;
 
 export interface CommandHandler {
@@ -33,7 +33,7 @@ export async function validationHandler(
   const {
     validate,
     "<lhc-json-file>": lhcFormJsonFileName,
-    "--url-exec": urlExec,
+    "--lform-schema-ts": lformSchemaTsSrcURL,
     "--persist-on-error": persistOnError,
     "--verbose": verbose,
   } = options;
@@ -43,7 +43,9 @@ export async function validationHandler(
       lhcFormJsonFileName.toString(),
     );
     const lhcFormJsonModule = new mod.LhcFormJsonModule({
-      ...mod.defaultLhcFormJsonModuleOptions,
+      ...await mod.defaultLhcFormJsonModuleOptions(
+        lformSchemaTsSrcURL ? lformSchemaTsSrcURL.toString() : undefined,
+      ),
       moduleName: moduleName,
       jsonContentFileName: lhcFormJsonFileName.toString(),
     });
@@ -72,7 +74,7 @@ export async function jsonToTypedDataGenHandler(
     "json-to-tdg-ts": jsonToTDG,
     "<lhc-json-file>": lhcFormJsonFileName,
     "<lhc-tdg-ts-file>": lhcFormTdgTsFileName,
-    "--url-exec": urlExec,
+    "--lform-schema-ts": lformSchemaTsSrcURL,
     "--verbose": verbose,
   } = options;
   if (jsonToTDG && lhcFormJsonFileName) {
@@ -83,7 +85,9 @@ export async function jsonToTypedDataGenHandler(
         lhcFormJsonFileName.toString(),
       );
     const lhcFormJsonModule = new mod.LhcFormJsonModule({
-      ...mod.defaultLhcFormJsonModuleOptions,
+      ...await mod.defaultLhcFormJsonModuleOptions(
+        lformSchemaTsSrcURL ? lformSchemaTsSrcURL.toString() : undefined,
+      ),
       moduleName: moduleName,
       jsonContentFileName: lhcFormJsonFileName.toString(),
     });
