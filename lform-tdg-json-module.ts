@@ -7,17 +7,28 @@ export const lformSchemaTsGitHubURL = new URL(
 export async function defaultLhcFormJsonModuleOptions(
   lformSchemaTsSrcURL?: string,
 ) {
+  const defaultLformTsRef = fs.existsSync("./lform.ts")
+    ? "./lform.ts"
+    : lformSchemaTsGitHubURL;
+  let lformSC: tdg.SourceCode;
+  if (lformSchemaTsSrcURL) {
+    lformSC = await tdg.acquireSourceCode(lformSchemaTsSrcURL);
+    if (!lformSC.isValid) {
+      console.error(
+        `${lformSchemaTsSrcURL} is not a valid LCH Form Schema reference. Using default (${defaultLformTsRef}) instead.`,
+      );
+      lformSC = await tdg.acquireSourceCode(defaultLformTsRef);
+    }
+  } else {
+    lformSC = await tdg.acquireSourceCode(defaultLformTsRef);
+  }
+
   return {
     imports: [
       {
         denoCompilerSrcKey: "/lform.ts",
         typeScriptImportRef: `import type * as lform from "./lform.ts"`,
-        importedRefSourceCode: await tdg.acquireSourceCode(
-          lformSchemaTsSrcURL
-            ? lformSchemaTsSrcURL
-            : (fs.existsSync("./lform.ts") ? "./lform.ts"
-            : lformSchemaTsGitHubURL),
-        ),
+        importedRefSourceCode: lformSC,
       },
     ],
     primaryConstName: "form",
