@@ -80,7 +80,7 @@ export interface FormItem {
 
 export interface Cardinality {
   min: number;
-  max: number;
+  max: number | "*";
 }
 
 export interface ItemAnswer {
