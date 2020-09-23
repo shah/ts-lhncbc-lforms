@@ -1,6 +1,6 @@
 import * as typedDataGen from "https://denopkg.com/shah/tsd-typed-data-gen/mod.ts";
 
-import type * as lform from "./lform.ts";
+import type * as lform from "https://raw.githubusercontent.com/shah/ts-lhncbc-lforms/master/lform.ts";
 
 export const form: lform.NihLhcForm = {
   name: "CARIN Alliance Code of Conduct",

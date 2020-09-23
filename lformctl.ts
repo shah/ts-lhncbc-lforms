@@ -54,9 +54,17 @@ export function lhcFormJsonSources(options: DocOptions): string[] {
   return sources;
 }
 
-export async function lhcFormJsonModuleOptions(options: DocOptions) {
+export async function lhcFormJsonModuleOptions(
+  options: DocOptions,
+  forDynamicCompiling: boolean,
+  moduleName: string,
+  jsonContentFileName: string,
+): Promise<tdg.JsonModuleOptions> {
   const { "--lform-schema-ts": lformSchemaTsSrcURL } = options;
   return await mod.defaultLhcFormJsonModuleOptions(
+    forDynamicCompiling,
+    moduleName,
+    jsonContentFileName,
     lformSchemaTsSrcURL ? lformSchemaTsSrcURL.toString() : undefined,
   );
 }
@@ -79,18 +87,19 @@ export async function validationHandler(
     if (verbose) {
       console.log(`Validating ${sources.length} source files...`);
     }
-    const lformJsonModuleOptions = await lhcFormJsonModuleOptions(options);
     for (const source of sources) {
       const moduleName = tdg.forceExtension(
         ".auto.ts",
         path.relative(Deno.cwd(), source)
           .replaceAll(path.SEP, "__"), // TypeScript compiler doesn't like paths
       );
-      const lhcFormJsonModule = new mod.LhcFormJsonModule({
-        ...lformJsonModuleOptions,
-        moduleName: moduleName,
-        jsonContentFileName: source,
-      });
+      const jmOptions = await lhcFormJsonModuleOptions(
+        options,
+        true,
+        moduleName,
+        source,
+      );
+      const lhcFormJsonModule = new mod.LhcFormJsonModule(jmOptions);
       const tsSrcDiagnostics = await lhcFormJsonModule.validate();
       if (tsSrcDiagnostics) {
         if (persistOnError) {
@@ -137,7 +146,6 @@ export async function jsonToTypedDataGenHandler(
       );
       return true;
     }
-    const lformJsonModuleOptions = await lhcFormJsonModuleOptions(options);
     for (const source of sources) {
       const moduleName = lhcFormTdgTsFileName
         ? tdg.forceExtension(".tdg.ts", lhcFormTdgTsFileName.toString())
@@ -146,11 +154,13 @@ export async function jsonToTypedDataGenHandler(
           path.relative(Deno.cwd(), source)
             .replaceAll(path.SEP, "__"), // TypeScript compiler doesn't like paths
         );
-      const lhcFormJsonModule = new mod.LhcFormJsonModule({
-        ...lformJsonModuleOptions,
-        moduleName: moduleName,
-        jsonContentFileName: source,
-      });
+      const jmOptions = await lhcFormJsonModuleOptions(
+        options,
+        false,
+        moduleName,
+        source,
+      );
+      const lhcFormJsonModule = new mod.LhcFormJsonModule(jmOptions);
       const writtenToFile = lhcFormJsonModule.persistTypedDataGenCode(
         tdg.forceExtension(
           ".auto.tdg.ts",
