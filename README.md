@@ -26,6 +26,15 @@ Options:
 
 # Validation Example
 
+Normal usage will be to have JSON files available in a directory and just run from URL:
+
+```bash
+❯ deno-run "https://denopkg.com/shah/ts-lhncbc-lforms/lformctl.ts" validate "**/*.json" --verbose
+❯ deno-run "https://denopkg.com/shah/ts-lhncbc-lforms@v1.1.3/lformctl.ts" validate "**/*.json" --verbose
+```
+
+As shown above, you can use either a specific version or leave out the version number to use the latest version.
+
 There is a sample LHC Form JSON file `test1-with-error.lhc-form.json` which has forced error. 
 If you run the validator, it should give you a proper error message:
 
@@ -38,6 +47,15 @@ TS2322 [ERROR]: Type 'string' is not assignable to type 'number'.
 ```
 
 # Convert LHC Form JSON to Typed Data Gen (TDG) TypeScript
+
+Normal usage will be to have JSON files available in a directory and just run from URL:
+
+```bash
+❯ deno-run "https://denopkg.com/shah/ts-lhncbc-lforms/lformctl.ts" json-to-tdg-ts "**/*.json" --verbose
+❯ deno-run "https://denopkg.com/shah/ts-lhncbc-lforms@v1.1.3/lformctl.ts" json-to-tdg-ts "**/*.json" --verbose
+```
+
+As shown above, you can use either a specific version or leave out the version number to use the latest version.
 
 You can take the LHC Form JSON file `test1-with-error.lhc-form.json` and generate an editable
 TypeScript file from it:

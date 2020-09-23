@@ -4,7 +4,7 @@ import docopt, {
   DocOptions,
 } from "https://denopkg.com/Eyal-Shalev/docopt.js@v1.0.1/src/docopt.ts";
 
-const $VERSION = "v1.1.2";
+const $VERSION = "v1.1.3";
 const docoptSpec = `
 LHC Form Controller ${$VERSION}.
 
@@ -152,13 +152,15 @@ export async function jsonToTypedDataGenHandler(
         jsonContentFileName: source,
       });
       const writtenToFile = lhcFormJsonModule.persistTypedDataGenCode(
-        moduleName,
+        tdg.forceExtension(
+          ".auto.tdg.ts",
+          source,
+        ),
       );
+      const relWritten = path.relative(Deno.cwd(), writtenToFile);
       if (verbose) {
         console.log(
-          `Created ${
-            path.relative(Deno.cwd(), writtenToFile)
-          }, run 'deno fmt ${writtenToFile}' to format it.`,
+          `Created ${relWritten}, run 'deno fmt ${relWritten}' to format it.`,
         );
       }
     }
