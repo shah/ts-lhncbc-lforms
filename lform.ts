@@ -86,7 +86,7 @@ export interface Cardinality {
 export interface ItemAnswer {
   code: string;
   text: string;
-  other?: boolean;
+  other?: boolean | string;
   label?: string;
   score?: number;
   codeSystem?: string;
@@ -135,7 +135,7 @@ export enum Name {
 export interface ValueElement {
   text: string;
   code: string;
-  other?: boolean;
+  other?: boolean | string;
 }
 
 export interface DataFormatElement {
