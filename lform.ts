@@ -59,7 +59,7 @@ export interface FormItem {
   copyrightNotice?: string | null;
   questionCardinality?: Cardinality;
   answerCardinality?: Cardinality;
-  answers?: ItemAnswer[];
+  answers?: ItemAnswer[] | string | null;
   skipLogic?: SkipLogic;
   editable?: 0 | 1 | string;
   defaultAnswer?: DefaultAnswerClass | string;
