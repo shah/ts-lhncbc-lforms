@@ -132,11 +132,11 @@ export enum Name {
   Width = "width",
 }
 
-export interface ValueElement {
+export type ValueElement = string | boolean | number | {
   text: string;
   code: string;
   other?: boolean | string;
-}
+};
 
 export interface DataFormatElement {
   code: string;
@@ -160,16 +160,11 @@ export interface Condition {
 
 export interface Trigger {
   code?: string;
-  value?: NotEqual | number;
+  value?: ValueElement;
   exists?: boolean;
-  notEqual?: NotEqual;
+  notEqual?: ValueElement;
   minInclusive?: number;
   maxInclusive?: number;
-}
-
-export interface NotEqual {
-  code: string;
-  system?: string;
 }
 
 export interface Unit {
