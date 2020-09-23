@@ -4,7 +4,7 @@ import docopt, {
   DocOptions,
 } from "https://denopkg.com/Eyal-Shalev/docopt.js@v1.0.1/src/docopt.ts";
 
-const $VERSION = "v1.1.0";
+const $VERSION = "v1.1.2";
 const docoptSpec = `
 LHC Form Controller ${$VERSION}.
 
