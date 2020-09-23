@@ -1,22 +1,23 @@
-import { typedDataGen as tdg } from "./deps.ts";
+import { typedDataGen as tdg, fs, path } from "./deps.ts";
 import * as mod from "./mod.ts";
 import docopt, {
   DocOptions,
 } from "https://denopkg.com/Eyal-Shalev/docopt.js@v1.0.1/src/docopt.ts";
 
+const $VERSION = "v1.1.0";
 const docoptSpec = `
-LHC Form Controller.
+LHC Form Controller ${$VERSION}.
 
 Usage:
-  lformctl.ts validate <lhc-json-file> [--lform-schema-ts=<url>] [--persist-on-error] [--verbose]
-  lformctl.ts json-to-tdg-ts <lhc-json-file> [--lform-schema-ts=<url>] [<lhc-tdg-ts-file>] [--verbose]
-  lformctl.ts -h | --help
-  lformctl.ts --version
+  lformctl validate <lhc-json-src> [--lform-schema-ts=<url>] [--persist-on-error] [--verbose]
+  lformctl json-to-tdg-ts <lhc-json-src> [--lform-schema-ts=<url>] [<lhc-tdg-ts-file>] [--verbose]
+  lformctl -h | --help
+  lformctl --version
 
 Options:
   -h --help                   Show this screen
   --version                   Show version
-  <lhc-json-file>             LHC Form JSON file name (can be local or URL)
+  <lhc-json-src>              LHC Form JSON single local file name or glob (like "*.json" or "**/*.json")
   <lhc-tdg-ts-file>           LHC Form Typed Data Gen (TDG) TypeScript file name
   --lform-schema-ts=<url>     Where the lform.ts TypeScript schema can be found
   --persist-on-error          Saves the generated *.auto.ts file on error
@@ -27,41 +28,80 @@ export interface CommandHandler {
   (options: DocOptions): Promise<true | void>;
 }
 
+export function isDryRun(options: DocOptions): boolean {
+  const { "--dry-run": dryRun } = options;
+  return dryRun ? true : false;
+}
+
+export function isVerbose(options: DocOptions): boolean {
+  const { "--verbose": verbose } = options;
+  return verbose ? true : false;
+}
+
+export function lhcFormJsonSources(options: DocOptions): string[] {
+  const { "<lhc-json-src>": lhcFormJsonSrc } = options;
+  const sources: string[] = [];
+  if (lhcFormJsonSrc) {
+    const sourceSpec = lhcFormJsonSrc.toString();
+    if (fs.existsSync(sourceSpec)) {
+      sources.push(sourceSpec);
+    } else {
+      for (const we of fs.expandGlobSync(sourceSpec)) {
+        sources.push(we.path);
+      }
+    }
+  }
+  return sources;
+}
+
+export async function lhcFormJsonModuleOptions(options: DocOptions) {
+  const { "--lform-schema-ts": lformSchemaTsSrcURL } = options;
+  return await mod.defaultLhcFormJsonModuleOptions(
+    lformSchemaTsSrcURL ? lformSchemaTsSrcURL.toString() : undefined,
+  );
+}
+
 export async function validationHandler(
   options: DocOptions,
 ): Promise<true | void> {
   const {
     validate,
-    "<lhc-json-file>": lhcFormJsonFileName,
-    "--lform-schema-ts": lformSchemaTsSrcURL,
+    "<lhc-json-src>": lhcFormJsonSrcSpec,
     "--persist-on-error": persistOnError,
     "--verbose": verbose,
   } = options;
-  if (validate && lhcFormJsonFileName) {
-    const moduleName = tdg.forceExtension(
-      ".auto.ts",
-      lhcFormJsonFileName.toString(),
-    );
-    const lhcFormJsonModule = new mod.LhcFormJsonModule({
-      ...await mod.defaultLhcFormJsonModuleOptions(
-        lformSchemaTsSrcURL ? lformSchemaTsSrcURL.toString() : undefined,
-      ),
-      moduleName: moduleName,
-      jsonContentFileName: lhcFormJsonFileName.toString(),
-    });
-    const tsSrcDiagnostics = await lhcFormJsonModule.validate();
-    if (tsSrcDiagnostics) {
-      if (persistOnError) {
-        const writtenToFile = lhcFormJsonModule.persistGeneratedSrcCode();
-        if (verbose) console.log(`Created ${writtenToFile}`);
-      } else {
-        if (verbose) {
-          console.log(
-            `Generated file not persisted, use --persist-on-error to see source code`,
-          );
+  if (validate && lhcFormJsonSrcSpec) {
+    const sources = lhcFormJsonSources(options);
+    if (sources.length == 0) {
+      console.error(`No valid sources specified: ${lhcFormJsonSrcSpec}`);
+      return true;
+    }
+    const lformJsonModuleOptions = await lhcFormJsonModuleOptions(options);
+    for (const source of sources) {
+      const moduleName = tdg.forceExtension(
+        ".auto.ts",
+        path.relative(Deno.cwd(), source)
+          .replaceAll(path.SEP, "__"), // TypeScript compiler doesn't like paths
+      );
+      const lhcFormJsonModule = new mod.LhcFormJsonModule({
+        ...lformJsonModuleOptions,
+        moduleName: moduleName,
+        jsonContentFileName: source,
+      });
+      const tsSrcDiagnostics = await lhcFormJsonModule.validate();
+      if (tsSrcDiagnostics) {
+        if (persistOnError) {
+          const writtenToFile = lhcFormJsonModule.persistGeneratedSrcCode();
+          if (verbose) console.log(`Created ${writtenToFile}`);
+        } else {
+          if (verbose) {
+            console.log(
+              `Generated file not persisted, use --persist-on-error to see source code`,
+            );
+          }
         }
+        console.error(Deno.formatDiagnostics(tsSrcDiagnostics));
       }
-      console.error(Deno.formatDiagnostics(tsSrcDiagnostics));
     }
     return true;
   }
@@ -72,30 +112,46 @@ export async function jsonToTypedDataGenHandler(
 ): Promise<true | void> {
   const {
     "json-to-tdg-ts": jsonToTDG,
-    "<lhc-json-file>": lhcFormJsonFileName,
+    "<lhc-json-src>": lhcFormJsonSrcSpec,
     "<lhc-tdg-ts-file>": lhcFormTdgTsFileName,
-    "--lform-schema-ts": lformSchemaTsSrcURL,
-    "--verbose": verbose,
   } = options;
-  if (jsonToTDG && lhcFormJsonFileName) {
-    const moduleName = lhcFormTdgTsFileName
-      ? tdg.forceExtension(".tdg.ts", lhcFormTdgTsFileName.toString())
-      : tdg.forceExtension(
-        ".auto.tdg.ts",
-        lhcFormJsonFileName.toString(),
+  if (jsonToTDG && lhcFormJsonSrcSpec) {
+    const verbose = isVerbose(options);
+    const sources = lhcFormJsonSources(options);
+    if (sources.length == 0) {
+      console.error(`No valid sources specified: ${lhcFormJsonSrcSpec}`);
+      return true;
+    }
+    if (sources.length > 1 && lhcFormTdgTsFileName) {
+      console.error(
+        `<lhc-tdg-ts-file> should not be specified for multiple files`,
       );
-    const lhcFormJsonModule = new mod.LhcFormJsonModule({
-      ...await mod.defaultLhcFormJsonModuleOptions(
-        lformSchemaTsSrcURL ? lformSchemaTsSrcURL.toString() : undefined,
-      ),
-      moduleName: moduleName,
-      jsonContentFileName: lhcFormJsonFileName.toString(),
-    });
-    const writtenToFile = lhcFormJsonModule.persistTypedDataGenCode(moduleName);
-    if (verbose) {
-      console.log(
-        `Created ${writtenToFile}, run 'deno fmt ${writtenToFile}' to format it.`,
+      return true;
+    }
+    const lformJsonModuleOptions = await lhcFormJsonModuleOptions(options);
+    for (const source of sources) {
+      const moduleName = lhcFormTdgTsFileName
+        ? tdg.forceExtension(".tdg.ts", lhcFormTdgTsFileName.toString())
+        : tdg.forceExtension(
+          ".auto.tdg.ts",
+          path.relative(Deno.cwd(), source)
+            .replaceAll(path.SEP, "__"), // TypeScript compiler doesn't like paths
+        );
+      const lhcFormJsonModule = new mod.LhcFormJsonModule({
+        ...lformJsonModuleOptions,
+        moduleName: moduleName,
+        jsonContentFileName: source,
+      });
+      const writtenToFile = lhcFormJsonModule.persistTypedDataGenCode(
+        moduleName,
       );
+      if (verbose) {
+        console.log(
+          `Created ${
+            path.relative(Deno.cwd(), writtenToFile)
+          }, run 'deno fmt ${writtenToFile}' to format it.`,
+        );
+      }
     }
     return true;
   }

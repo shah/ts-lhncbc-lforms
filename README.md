@@ -6,21 +6,22 @@ The following commands are available:
 
 ```bash
 ❯ deno-run lformctl.ts --help
-LHC Form Controller.
+LHC Form Controller v1.1.0.
 
 Usage:
-  lformctl.ts validate <lhc-json-file> [--persist-on-error] [--verbose]
-  lformctl.ts json-to-tdg-ts <lhc-json-file> [<lhc-tdg-ts-file>] [--verbose]
-  lformctl.ts -h | --help
-  lformctl.ts --version
+  lformctl validate <lhc-json-src> [--lform-schema-ts=<url>] [--persist-on-error] [--verbose]
+  lformctl json-to-tdg-ts <lhc-json-src> [--lform-schema-ts=<url>] [<lhc-tdg-ts-file>] [--verbose]
+  lformctl -h | --help
+  lformctl --version
 
 Options:
-  -h --help                 Show this screen
-  --version                 Show version
-  <lhc-json-file>           LHC Form JSON file name (can be local or URL)
-  <lhc-tdg-ts-file>         LHC Form Typed Data Gen (TDG) TypeScript file name
-  --persist-on-error        Saves the generated *.auto.ts file on error
-  --verbose                 Be explicit about what's going on
+  -h --help                   Show this screen
+  --version                   Show version
+  <lhc-json-src>              LHC Form JSON single local file name or glob (like "*.json" or "**/*.json")
+  <lhc-tdg-ts-file>           LHC Form Typed Data Gen (TDG) TypeScript file name
+  --lform-schema-ts=<url>     Where the lform.ts TypeScript schema can be found
+  --persist-on-error          Saves the generated *.auto.ts file on error
+  --verbose                   Be explicit about what's going on
 ```
 
 # Validation Example
@@ -29,7 +30,7 @@ There is a sample LHC Form JSON file `test1-with-error.lhc-form.json` which has 
 If you run the validator, it should give you a proper error message:
 
 ```bash
-❯ deno-run lformctl.ts validate test1-with-error.lhc-form.json
+❯ deno-run lformctl.ts validate "*.json"
 TS2322 [ERROR]: Type 'string' is not assignable to type 'number'.
         min: 'bad data',
         ~~~
@@ -42,7 +43,7 @@ You can take the LHC Form JSON file `test1-with-error.lhc-form.json` and generat
 TypeScript file from it:
 
 ```bash
-❯ deno-run lformctl.ts json-to-tdg-ts test1-with-error.lhc-form.json --verbose
+❯ deno-run lformctl.ts json-to-tdg-ts "*.json" --verbose
 Created test1-with-error.lhc-form.auto.tdg.ts, run 'deno fmt test1-with-error.lhc-form.auto.tdg.ts' to format it.
 
 ❯ deno fmt test1-with-error.lhc-form.auto.tdg.ts
