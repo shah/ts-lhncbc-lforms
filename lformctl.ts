@@ -68,13 +68,16 @@ export async function validationHandler(
     validate,
     "<lhc-json-src>": lhcFormJsonSrcSpec,
     "--persist-on-error": persistOnError,
-    "--verbose": verbose,
   } = options;
   if (validate && lhcFormJsonSrcSpec) {
+    const verbose = isVerbose(options);
     const sources = lhcFormJsonSources(options);
     if (sources.length == 0) {
       console.error(`No valid sources specified: ${lhcFormJsonSrcSpec}`);
       return true;
+    }
+    if (verbose) {
+      console.log(`Validating ${sources.length} source files...`);
     }
     const lformJsonModuleOptions = await lhcFormJsonModuleOptions(options);
     for (const source of sources) {
@@ -101,6 +104,12 @@ export async function validationHandler(
           }
         }
         console.error(Deno.formatDiagnostics(tsSrcDiagnostics));
+      } else {
+        if (verbose) {
+          console.log(
+            `Validated ${path.relative(Deno.cwd(), source)} (no errors)`,
+          );
+        }
       }
     }
     return true;
