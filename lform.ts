@@ -15,6 +15,7 @@ export interface NihLhcForm {
   templateOptions?: FormTemplateOptions;
   items?: FormItem[];
   lformsVersion?: string;
+  status?: string;
 }
 
 export enum FormDataType {
@@ -88,8 +89,8 @@ export interface ItemAnswer {
   text: string;
   other?: boolean | string;
   label?: string;
-  score?: number;
-  codeSystem?: string;
+  score?: number | null;
+  system?: string | null;
   questionCardinality?: Cardinality;
   parentAnswerCode?: string;
 }
@@ -114,11 +115,17 @@ export interface DisplayControl {
   viewMode?: string;
   css?: CSS[];
   answerLayout?: AnswerLayout;
+  questionLayout?: QuestionLayout | string;
 }
 
 export interface AnswerLayout {
   type: string;
-  columns: string;
+  columns?: string;
+}
+
+export interface QuestionLayout {
+  type: string;
+  columns?: string;
 }
 
 export interface CSS {
@@ -133,8 +140,8 @@ export enum Name {
 }
 
 export type ValueElement = string | boolean | number | {
-  text: string;
-  code: string;
+  text?: string;
+  code: string | number;
   other?: boolean | string;
 };
 

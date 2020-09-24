@@ -1,0 +1,132 @@
+{
+  "status": "draft",
+  "items": [
+    {
+      "header": true,
+      "question": "Panel Heading",
+      "linkId": "1",
+      "questionCodeSystem": "1",
+      "questionCode": "1",
+      "questionCardinality": {
+        "min": "1",
+        "max": "1"
+      },
+      "answerCardinality": {
+        "min": "0",
+        "max": "1"
+      },
+      "editable": "1",
+      "displayControl": {
+        "questionLayout": "vertical"
+      },
+      "items": [
+        {
+          "header": false,
+          "dataType": "CNE",
+          "question": "Question 1",
+          "linkId": "1/1",
+          "questionCodeSystem": "1",
+          "questionCode": "1.1",
+          "questionCardinality": {
+            "min": "1",
+            "max": "1"
+          },
+          "answerCardinality": {
+            "min": "0",
+            "max": "1"
+          },
+          "editable": "1",
+          "answers": [
+            {
+              "text": "First Option",
+              "code": "1",
+              "system": "1",
+              "label": "1",
+              "score": null,
+              "other": "This is a test"
+            },
+            {
+              "text": "Second Option",
+              "code": "2",
+              "system": "2",
+              "label": "2",
+              "score": null,
+              "other": "This is a test 2"
+            }
+          ],
+          "displayControl": {
+            "answerLayout": {
+              "type": "COMBO_BOX"
+            }
+          }
+        },
+        {
+          "header": false,
+          "dataType": "CNE",
+          "question": "Do you want more questions",
+          "linkId": "1/2",
+          "questionCodeSystem": "1",
+          "questionCode": "1.2",
+          "questionCardinality": {
+            "min": "1",
+            "max": "1"
+          },
+          "answerCardinality": {
+            "min": "0",
+            "max": "1"
+          },
+          "editable": "1",
+          "answers": [
+            {
+              "text": "Yes",
+              "code": "1",
+              "system": null,
+              "label": "1",
+              "score": null
+            },
+            {
+              "text": "No",
+              "code": "2",
+              "system": null,
+              "label": "2",
+              "score": null
+            }
+          ],
+          "items": [
+            {
+              "header": false,
+              "dataType": "ST",
+              "question": "Name",
+              "linkId": "1/3",
+              "questionCodeSystem": "1",
+              "questionCode": "1.3",
+              "questionCardinality": {
+                "min": "1",
+                "max": "1"
+              },
+              "answerCardinality": {
+                "min": "0",
+                "max": "1"
+              },
+              "editable": "1",
+              "skipLogic": {
+                "action": "show",
+                "logic": "ANY",
+                "conditions": [
+                  {
+                    "source": "1/2",
+                    "trigger": {
+                      "value": {
+                        "code": "1"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
