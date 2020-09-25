@@ -1,0 +1,156 @@
+{
+  "shortName": "test3-update-interface-NihLhcForm.lhc-form.json",
+  "name": "Test Version for Form attributes",
+  "status": "unknown",
+  "url": "http://abc.com",
+  "version": "1.1",
+  "deriveFrom": [
+    "http://derived1.com"
+  ],
+  "experimental": true,
+  "subjectType": [
+    "Testing"
+  ],
+  "date": "2020-08-04T13:17:25.982Z",
+  "publisher": "Alan Francis",
+  "description": "This is a test description",
+  "purpose": "This is for testing purpose",
+  "copyright": "This is copyrighted with Alan Francis",
+  "approvalDate": "2020-09-23",
+  "lastReviewDate": "2020-09-23",
+  "effectivePeriod": {
+    "start": "2020-09-24T13:33:45.946Z",
+    "end": "2020-09-30T13:30:29.960Z"
+  },
+  "items": [
+    {
+      "header": true,
+      "question": "Panel Heading",
+      "linkId": "/1",
+      "questionCodeSystem": "1",
+      "questionCode": "1",
+      "questionCardinality": {
+        "min": "1",
+        "max": "1"
+      },
+      "answerCardinality": {
+        "min": "0",
+        "max": "1"
+      },
+      "editable": "1",
+      "displayControl": {
+        "questionLayout": "vertical"
+      },
+      "items": [
+        {
+          "header": false,
+          "dataType": "CNE",
+          "question": "Question 1",
+          "linkId": "1/1",
+          "questionCodeSystem": "1",
+          "questionCode": "1.1",
+          "questionCardinality": {
+            "min": "1",
+            "max": "1"
+          },
+          "answerCardinality": {
+            "min": "0",
+            "max": "1"
+          },
+          "editable": "1",
+          "answers": [
+            {
+              "text": "First Option",
+              "code": "1",
+              "system": "1",
+              "label": "1",
+              "score": null,
+              "other": "This is a test"
+            },
+            {
+              "text": "Second Option",
+              "code": "2",
+              "system": "2",
+              "label": "2",
+              "score": null,
+              "other": "This is a test 2"
+            }
+          ],
+          "displayControl": {
+            "answerLayout": {
+              "type": "COMBO_BOX"
+            }
+          }
+        },
+        {
+          "header": false,
+          "dataType": "CNE",
+          "question": "Do you want more questions",
+          "linkId": "1/2",
+          "questionCodeSystem": "1",
+          "questionCode": "1.2",
+          "localQuestionCode": "1.2",
+          "questionCardinality": {
+            "min": "1",
+            "max": "1"
+          },
+          "answerCardinality": {
+            "min": "0",
+            "max": "1"
+          },
+          "editable": "1",
+          "answers": [
+            {
+              "text": "Yes",
+              "code": "1",
+              "system": null,
+              "label": "1",
+              "score": null
+            },
+            {
+              "text": "No",
+              "code": "2",
+              "system": null,
+              "label": "2",
+              "score": null
+            }
+          ],
+          "items": [
+            {
+              "header": false,
+              "dataType": "URL",
+              "question": "Name",
+              "linkId": "1/3",
+              "questionCodeSystem": "1",
+              "questionCode": "1.3",
+              "localQuestionCode": "1.3",
+              "questionCardinality": {
+                "min": "1",
+                "max": "1"
+              },
+              "answerCardinality": {
+                "min": "0",
+                "max": "1"
+              },
+              "editable": "1",
+              "skipLogic": {
+                "action": "show",
+                "logic": "ALL",
+                "conditions": [
+                  {
+                    "source": "1/2",
+                    "trigger": {
+                      "value": {
+                        "code": "1"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

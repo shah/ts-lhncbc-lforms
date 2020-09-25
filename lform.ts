@@ -16,6 +16,20 @@ export interface NihLhcForm {
   items?: FormItem[];
   lformsVersion?: string;
   status?: string;
+  shortName?: string;
+  version?: string;
+  url?: string;
+  date?: Date | string;
+  publisher?: string;
+  description?: string;
+  deriveFrom?: string[];
+  subjectType?: string[];
+  experimental?: boolean;
+  purpose?: string;
+  copyright?: string;
+  approvalDate?: string;
+  lastReviewDate?: string;
+  effectivePeriod?: DatePeriod;
 }
 
 export enum FormDataType {
@@ -200,4 +214,9 @@ export interface FormHeaderItem {
   answerCardinality?: Cardinality;
   displayControl: FormHeaderItemDisplayControl;
   defaultAnswer?: string;
+}
+
+export interface DatePeriod {
+  start?: string;
+  end?: string;
 }
