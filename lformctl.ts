@@ -22,7 +22,7 @@ Options:
   --version                   Show version
 `;
 
-export class LhdFormJsonTyper extends govnData.TypicalJsonTyper {
+export class LhcFormJsonTyper extends govnData.TypicalJsonTyper {
   constructor({ "--lform-schema-ts": typeImportURL }: gdctl.docopt.DocOptions) {
     super(govnData.defaultTypicalJsonTyperOptions(
       (typeImportURL ? typeImportURL.toString() : undefined) ||
@@ -62,7 +62,7 @@ export async function lhcFormJsonTyperCliHandler(
     );
     ctl.jsonType({
       jsonSrcSpec: lformJsonSpec?.toString() || "*.json",
-      typer: new LhdFormJsonTyper(ctx.cliOptions),
+      typer: new LhcFormJsonTyper(ctx.cliOptions),
       verbose: ctx.isVerbose || ctx.isDryRun,
       overwrite: ctx.shouldOverwrite,
     });
