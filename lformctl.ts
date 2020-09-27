@@ -1,6 +1,6 @@
 import { govnData, govnDataCLI as gdctl, path } from "./deps.ts";
 
-const $VERSION = "v1.3.5";
+const $VERSION = "v1.3.7";
 const docoptSpec = `
 Goverend LHC Form Data Controller (GLForm) ${$VERSION}.
 
