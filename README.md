@@ -6,22 +6,24 @@ The following commands are available:
 
 ```bash
 ❯ deno-run lformctl.ts --help
-LHC Form Controller v1.1.0.
+Goverend LHC Form Data Controller (GLForm) ${$VERSION}.
+
+GLForm is a wrapper around the GovSuite GDC Controller which allows a more convenient CLI for
+managing LForm Schemas.
 
 Usage:
-  lformctl validate <lhc-json-src> [--lform-schema-ts=<url>] [--persist-on-error] [--verbose]
-  lformctl json-to-tdg-ts <lhc-json-src> [--lform-schema-ts=<url>] [<lhc-tdg-ts-file>] [--verbose]
+  lformctl json type <lform-json-src> [--lform-schema-ts=<url>] [--validate] [--overwrite] [--verbose] [--dry-run]
   lformctl -h | --help
   lformctl --version
 
 Options:
+  <lform-json-src>            LHC Form JSON single local file name or glob (like "*.json" or "**/*.json")
+  --lform-schema-ts=<url>     Where the lform.ts TypeScript schema can be found
+  --validate                  Validate the generated TypeScript
+  --overwrite                 If the destination file already exists, it's OK to replace it
+  --verbose                   Be explicit about what's going on
   -h --help                   Show this screen
   --version                   Show version
-  <lhc-json-src>              LHC Form JSON single local file name or glob (like "*.json" or "**/*.json")
-  <lhc-tdg-ts-file>           LHC Form Typed Data Gen (TDG) TypeScript file name
-  --lform-schema-ts=<url>     Where the lform.ts TypeScript schema can be found
-  --persist-on-error          Saves the generated *.auto.ts file on error
-  --verbose                   Be explicit about what's going on
 ```
 
 # Validation Example
@@ -30,7 +32,6 @@ Normal usage will be to have JSON files available in a directory and just run fr
 
 ```bash
 ❯ deno-run "https://denopkg.com/shah/ts-lhncbc-lforms/lformctl.ts" validate "**/*.json" --verbose
-❯ deno-run "https://denopkg.com/shah/ts-lhncbc-lforms@v1.1.3/lformctl.ts" validate "**/*.json" --verbose
 ```
 
 As shown above, you can use either a specific version or leave out the version number to use the latest version.
@@ -39,7 +40,7 @@ There is a sample LHC Form JSON file `test1-with-error.lhc-form.json` which has 
 If you run the validator, it should give you a proper error message:
 
 ```bash
-❯ deno-run lformctl.ts validate "*.json"
+❯ deno-run lformctl.ts json type "*.json" --validate --overwrite --verbose
 TS2322 [ERROR]: Type 'string' is not assignable to type 'number'.
         min: 'bad data',
         ~~~
