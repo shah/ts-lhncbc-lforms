@@ -1,2 +1,2 @@
 export * from "./lform.ts";
-export * from "./lform-tdg-json-module.ts";
+export * from "./lform-container.ts";
