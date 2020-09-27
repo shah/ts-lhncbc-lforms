@@ -1,6 +1,6 @@
 import { govnData, govnDataCLI as gdctl, path } from "./deps.ts";
 
-const $VERSION = "v1.3.0";
+const $VERSION = "v1.3.1";
 const docoptSpec = `
 Goverend LHC Form Data Controller (GLForm) ${$VERSION}.
 
@@ -8,7 +8,7 @@ GLForm is a wrapper around the GovSuite GDC Controller which allows a more conve
 managing LForm Schemas.
 
 Usage:
-  lformctl json type <lform-json-src> [--lform-schema-ts=<url>] [--validate] [--overwrite] [--verbose] [--dry-run]
+  lformctl lform type <lform-json-src> [--lform-schema-ts=<url>] [--validate] [--overwrite] [--verbose] [--dry-run]
   lformctl -h | --help
   lformctl --version
 
@@ -37,7 +37,7 @@ export async function lhcFormJsonTyperCliHandler(
   ctx: govnData.CliCmdHandlerContext,
 ): Promise<true | void> {
   const {
-    "json": json,
+    "lform": json,
     "type": type,
     "<lform-json-src>": lformJsonSpec,
     "--validate": validate,
