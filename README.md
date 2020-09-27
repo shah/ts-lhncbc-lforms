@@ -46,7 +46,7 @@ TS2322 [ERROR]: Type 'string' is not assignable to type 'number'.
     at /test1-with-error.lhc-form.auto.ts:12:9
 ```
 
-# Convert LHC Form JSON to Typed Data Gen (TDG) TypeScript
+# Convert LHC Form JSON to Governed Structured Data (GSD) TypeScript
 
 Normal usage will be to have JSON files available in a directory and just run from URL:
 
@@ -73,5 +73,5 @@ Overwriting: test2-github-issue2.lhc-form.auto.ts
 Overwriting: test3-update-interface-NihLhcForm.lhc-form.auto.ts
 ./test3-update-interface-NihLhcForm.lhc-form.auto.ts
 
-❯ deno fmt test1-with-error.lhc-form.auto.tdg.ts
+❯ deno fmt test1-with-error.lhc-form.auto.ts
 ```
