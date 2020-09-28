@@ -9,7 +9,7 @@ export interface NihLhcForm {
   dataType?: FormDataType;
   header?: boolean;
   units?: FormUnits | null;
-  codeSystem?: FormCodeSystem;
+  codeSystem?: FormCodeSystem | string;
   codingInstructions?: string;
   copyrightNotice?: string | null;
   templateOptions?: FormTemplateOptions;
@@ -30,6 +30,11 @@ export interface NihLhcForm {
   approvalDate?: string;
   lastReviewDate?: string;
   effectivePeriod?: DatePeriod;
+  PATH_DELIMITER?: string;
+  codeList?: CodeListOptions[];
+  template?: string;
+  identifier?: string | null;
+  hasSavedData?: boolean;
 }
 
 export enum FormDataType {
@@ -76,7 +81,7 @@ export interface FormItem {
   answerCardinality?: Cardinality;
   answers?: ItemAnswer[] | string | null;
   skipLogic?: SkipLogic;
-  editable?: 0 | 1 | string;
+  editable?: 0 | 1 | 2 | string;
   defaultAnswer?: DefaultAnswerClass | string;
   calculationMethod?: null;
   items?: FormItem[];
@@ -84,13 +89,19 @@ export interface FormItem {
   answerCodeSystem?: string;
   layout?: string;
   dataControl?: DataControl[];
-  value?: ValueElement;
+  value?: ValueElement[] | ValueElement;
   prefix?: string;
   extensions?: Record<string, unknown>;
   hideUnits?: boolean;
   noEmptyValue?: boolean;
   localQuestionCode?: string;
   validation?: "EMAIL" | "NUMBER";
+  obj_text?: CssExtensions;
+  obj_prefix?: CssExtensions;
+  codeList?: CodeListOptions[];
+  numberField?: boolean;
+  externallyDefined?: string;
+  FILEUPLOAD?: boolean;
 }
 
 export interface Cardinality {
@@ -99,7 +110,7 @@ export interface Cardinality {
 }
 
 export interface ItemAnswer {
-  code: string;
+  code?: string;
   text: string;
   other?: boolean | string;
   label?: string;
@@ -134,7 +145,7 @@ export interface DisplayControl {
 
 export interface AnswerLayout {
   type: string;
-  columns?: string;
+  columns?: string | number;
 }
 
 export interface QuestionLayout {
@@ -155,7 +166,7 @@ export enum Name {
 
 export type ValueElement = string | boolean | number | {
   text?: string;
-  code: string | number;
+  code?: string | number;
   other?: boolean | string;
 };
 
@@ -175,7 +186,7 @@ export interface SkipLogic {
 }
 
 export interface Condition {
-  source: string;
+  source: string | number;
   trigger: Trigger;
 }
 
@@ -204,6 +215,17 @@ export interface FormTemplateOptions {
   allowHTMLInInstructions?: boolean;
   allowMultipleEmptyRepeatingItems?: boolean;
   showColumnHeaders?: boolean;
+  showQuestionCode?: boolean;
+  showCodingInstruction?: boolean;
+  tabOnInputFieldsOnly?: boolean;
+  showFormOptionPanelButton?: boolean;
+  showItemOptionPanelButton?: boolean;
+  useAnimation?: boolean;
+  displayControl?: DisplayControl;
+  viewMode?: string;
+  defaultAnswerLayout?: DisplayControl;
+  useTreeLineStyle?: boolean;
+  columnHeaders?: ColumnHeadOption[];
 }
 
 export interface FormHeaderItem {
@@ -219,4 +241,21 @@ export interface FormHeaderItem {
 export interface DatePeriod {
   start?: string;
   end?: string;
+}
+
+export interface CssExtensions {
+  extension?: [{
+    url?: string;
+    valueString?: string;
+  }];
+}
+
+export interface CodeListOptions {
+  code?: string;
+  display?: string;
+  system?: string;
+}
+
+export interface ColumnHeadOption {
+  name?: string;
 }
