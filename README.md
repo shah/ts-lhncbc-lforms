@@ -75,3 +75,11 @@ Overwriting: test3-update-interface-NihLhcForm.lhc-form.auto.ts
 
 ❯ deno fmt test1-with-error.lhc-form.auto.ts
 ```
+
+# Contributing
+
+If you need to make any changes to this repo, please do the following:
+
+* Update the file
+* Run `deno run -A --unstable lformctl.ts lform type *.json` 
+* If everything works, do a Git commit and then `projectctl publish` to bump the version
