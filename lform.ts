@@ -250,12 +250,12 @@ export interface CssExtensions {
   }];
 }
 
-export interface codeListOptions {
+export interface CodeListOptions {
   code?: string;
   display?: string;
   system?: string;
 }
 
-export interface columnHeadOption {
+export interface ColumnHeadOption {
   name?: string;
 }
