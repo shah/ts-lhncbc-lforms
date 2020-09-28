@@ -31,7 +31,7 @@ export interface NihLhcForm {
   lastReviewDate?: string;
   effectivePeriod?: DatePeriod;
   PATH_DELIMITER?: string;
-  codeList?: codeListOptions[];
+  codeList?: CodeListOptions[];
   template?: string;
   identifier?: string | null;
   hasSavedData?: boolean;
@@ -98,7 +98,7 @@ export interface FormItem {
   validation?: "EMAIL" | "NUMBER";
   obj_text?: CssExtensions;
   obj_prefix?: CssExtensions;
-  codeList?: codeListOptions[];
+  codeList?: CodeListOptions[];
   numberField?: boolean;
   externallyDefined?: string;
   FILEUPLOAD?: boolean;
@@ -225,7 +225,7 @@ export interface FormTemplateOptions {
   viewMode?: string;
   defaultAnswerLayout?: DisplayControl;
   useTreeLineStyle?: boolean;
-  columnHeaders?: columnHeadOption[];
+  columnHeaders?: ColumnHeadOption[];
 }
 
 export interface FormHeaderItem {
