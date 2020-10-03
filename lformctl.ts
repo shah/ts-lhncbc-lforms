@@ -27,7 +27,7 @@ export class LhcFormJsonTyper extends govnData.TypicalJsonTyper {
     super(govnData.defaultTypicalJsonTyperOptions(
       (typeImportURL ? typeImportURL.toString() : undefined) ||
         "https://denopkg.com/shah/ts-lhncbc-lforms/lform.ts",
-      "NihLhcForm",
+      "mod.NihLhcForm",
       { instanceName: "form", emittedFileExtn: ".lhc-form.auto.ts" },
     ));
   }
