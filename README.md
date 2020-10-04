@@ -109,7 +109,7 @@ export type UniqueStrictEmailAddressItem = StrictEmailAddressItem & UniqueItem;
 
 ```
 
-Then, they can be used in a type-safe Form. In the example below, the `RespondentContactInformation` type is a section defined to require specifically typed items and then it's used in the `OfferingProfileLhcForm` with other sections. For the full example, see [github.com/medigy/governance/offering-profile/lform.ts](https://github.com/medigy/governance/offering-profile/lform.ts).
+Then, they can be used in a type-safe Form. In the example below, the `RespondentContactInformation` type is a section defined to require specifically typed items and then it's used in the `OfferingProfileLhcForm` with other sections. For the full example, see [medigy/governance/offering-profile/lform.ts](https://github.com/medigy/governance/blob/master/offering-profile/inspect.ts).
 
 ```typescript
 export interface RespondentCompanyName extends lf.UniqueTextItem {
