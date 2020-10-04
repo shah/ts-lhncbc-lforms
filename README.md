@@ -6,7 +6,7 @@ The following commands are available:
 
 ```bash
 ❯ deno-run lformctl.ts --help
-Goverend LHC Form Data Controller (GLForm) v1.3.0.
+Governend LHC Form Data Controller (GLForm) v1.3.0.
 
 GLForm is a wrapper around the GovSuite GDC Controller which allows a more convenient CLI for
 managing LForm Schemas.
@@ -26,7 +26,7 @@ Options:
   --version                   Show version
 ```
 
-# Validation Example
+# Structural Validation Example
 
 Normal usage will be to have JSON files available in a directory and just run from URL:
 
@@ -74,6 +74,79 @@ Overwriting: test3-update-interface-NihLhcForm.lhc-form.auto.ts
 ./test3-update-interface-NihLhcForm.lhc-form.auto.ts
 
 ❯ deno fmt test1-with-error.lhc-form.auto.ts
+```
+
+# Content Validation of fields in LHC Forms
+
+In addition to structurally validating a form, some of the content of an LHC may also be validated using TypeScript-based strong typing. To understand how to perform stronger typing, review the [item.ts](item.ts) module. `item.ts` contains typed FormItem interfaces that can be used by `NihLhcForm` (see [lform.ts](lform.ts)) instances.
+
+For example, see the following `FormItem` specialized interfaces. These interfaces are pretty simple but they can be combined with other types or extended to include any valid LHC Form properties and definitions. The nice thing about defining them in TypeScript is that, combined with GSD, the `tsc` compiler can validate an LHC Form JSON with no extra coding.
+
+```typescript
+export interface UniqueItem {
+  readonly questionCardinality: { min: 1; max: 1 };
+}
+
+export interface TextItem extends FormItem {
+  readonly dataType: "ST";
+}
+
+export interface EmailAddressItem extends FormItem {
+  readonly dataType: "EMAIL" | "ST";
+}
+
+export interface StrictEmailAddressItem extends EmailAddressItem {
+  readonly dataType: "EMAIL";
+}
+```
+
+The above can then be mixed algebraically to create even further specialized interfaces:
+
+```typescript
+export type UniqueTextItem = TextItem & UniqueItem;
+export type UniqueEmailAddressItem = EmailAddressItem & UniqueItem;
+export type UniqueStrictEmailAddressItem = StrictEmailAddressItem & UniqueItem;
+
+```
+
+Then, they can be used in a type-safe Form. In the example below, the `RespondentContactInformation` type is a section defined to require specifically typed items and then it's used in the `OfferingProfileLhcForm` with other sections. For the full example, see [github.com/medigy/governance/offering-profile/lform.ts](https://github.com/medigy/governance/offering-profile/lform.ts).
+
+```typescript
+export interface RespondentCompanyName extends lf.UniqueTextItem {
+  readonly questionCode: "company-name";
+  readonly localQuestionCode: "company-name";
+  readonly question: "Name of the company providing this offering*";
+}
+
+export interface RespondentEmailAddress extends lf.UniqueEmailAddressItem {
+  readonly questionCode: "Q002-05";
+  readonly localQuestionCode: "Q002-05";
+  readonly question: "Email address of the company*";
+}
+
+export interface RespondentContactInformation extends lf.FormItem {
+  readonly header: true;
+  readonly question: "Respondent Contact Information";
+  readonly items: [
+    RespondentCompanyName,
+    RespondentEmailAddress,
+    RespondentContactPhoneNumber,
+    RespondentVendorName,
+    RespondentVendorEmailAddress,
+    RespondentVendorPhoneNumber,
+    RespondentSource,
+  ];
+}
+
+...
+
+export interface OfferingProfileLhcForm extends lf.NihLhcForm {
+  readonly items: [
+    RespondentContactInformation,
+    ProductDetails,
+    SocialPresence,
+  ];
+}
 ```
 
 # Contributing
