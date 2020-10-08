@@ -1,0 +1,1058 @@
+{
+  "name": "Institutional Profile",
+  "status": "draft",
+  "items": [
+    {
+      "header": false,
+      "dataType": "CNE",
+      "question": "You are*",
+      "linkId": "/002-01-01",
+      "questionCodeSystem": "Custom",
+      "questionCode": "002-01-01",
+      "localQuestionCode": "002-01-01",
+      "codingInstructions": "Select from the given list - Vendor or Buyer",
+      "questionCardinality": {
+        "min": "1",
+        "max": "1"
+      },
+      "answerCardinality": {
+        "min": "1",
+        "max": "1"
+      },
+      "editable": "1",
+      "answers": [
+        {
+          "text": "Vendor",
+          "code": "002-01-01-01",
+          "system": null,
+          "label": null,
+          "score": null
+        },
+        {
+          "text": "Buyer",
+          "code": "002-01-01-02",
+          "system": null,
+          "label": null,
+          "score": null
+        }
+      ],
+      "displayControl": {
+        "answerLayout": {
+          "type": "COMBO_BOX"
+        }
+      },
+      "codeList": [
+        {
+          "code": "002-01-01",
+          "display": "You are*",
+          "system": "Custom"
+        }
+      ],
+      "value": {
+        "text": "Vendor",
+        "code": "002-01-01-01",
+        "system": null,
+        "label": null,
+        "score": null
+      }
+    },
+    {
+      "header": false,
+      "dataType": "CWE",
+      "question": "Your Job Title*",
+      "linkId": "/002-01-02",
+      "questionCodeSystem": "Custom",
+      "questionCode": "002-01-02",
+      "localQuestionCode": "002-01-02",
+      "codingInstructions": "Select from the given list",
+      "questionCardinality": {
+        "min": "1",
+        "max": "1"
+      },
+      "answerCardinality": {
+        "min": "1",
+        "max": "1"
+      },
+      "editable": "1",
+      "answers": [
+        {
+          "text": "Accounting",
+          "code": "002-01-02-01",
+          "system": null,
+          "label": null,
+          "score": null
+        },
+        {
+          "text": "Human Resources",
+          "code": "002-01-02-02",
+          "system": null,
+          "label": null,
+          "score": null
+        },
+        {
+          "text": "Finance",
+          "code": "002-01-02-03",
+          "system": null,
+          "label": null,
+          "score": null
+        },
+        {
+          "text": "Information Technology(IT) and Digital Media",
+          "code": "002-01-02-04",
+          "system": null,
+          "label": null,
+          "score": null
+        },
+        {
+          "text": "Insurance Job Title",
+          "code": "002-01-02-05",
+          "system": null,
+          "label": null,
+          "score": null
+        }
+      ],
+      "displayControl": {
+        "answerLayout": {
+          "type": "COMBO_BOX"
+        }
+      },
+      "codeList": [
+        {
+          "code": "002-01-02",
+          "display": "Your Job Title*",
+          "system": "Custom"
+        }
+      ],
+      "value": {
+        "text": "Information Technology(IT) and Digital Media",
+        "code": "002-01-02-04",
+        "system": null,
+        "label": null,
+        "score": null
+      }
+    },
+    {
+      "header": false,
+      "dataType": "ST",
+      "question": "Company Name*",
+      "linkId": "/002-01-04",
+      "questionCodeSystem": "Custom",
+      "questionCode": "002-01-04",
+      "localQuestionCode": "002-01-04",
+      "codingInstructions": "Full name of the institution including Inc, LLC",
+      "questionCardinality": {
+        "min": "1",
+        "max": "1"
+      },
+      "answerCardinality": {
+        "min": "1",
+        "max": "1"
+      },
+      "editable": "1",
+      "codeList": [
+        {
+          "code": "002-01-04",
+          "display": "Company Name*",
+          "system": "Custom"
+        }
+      ],
+      "value": "Netspective Communications"
+    },
+    {
+      "header": false,
+      "dataType": "TX",
+      "question": "Company Description",
+      "linkId": "/002-01-11",
+      "questionCode": "002-01-11",
+      "questionCardinality": {
+        "min": "1",
+        "max": "1"
+      },
+      "answerCardinality": {
+        "min": "0",
+        "max": "1"
+      },
+      "editable": "1"
+    },
+    {
+      "header": false,
+      "dataType": "DT",
+      "question": "Date of Incorporation*",
+      "linkId": "/002-01-05",
+      "questionCodeSystem": "Custom",
+      "questionCode": "002-01-05",
+      "localQuestionCode": "002-01-05",
+      "codingInstructions": "Institution Incorporation date in mm/dd/yyyy format",
+      "questionCardinality": {
+        "min": "1",
+        "max": "1"
+      },
+      "answerCardinality": {
+        "min": "0",
+        "max": "1"
+      },
+      "editable": "1",
+      "codeList": [
+        {
+          "code": "002-01-05",
+          "display": "Date of Incorporation*",
+          "system": "Custom"
+        }
+      ],
+      "value": "1997-05-14"
+    },
+    {
+      "header": false,
+      "dataType": "CNE",
+      "question": "Company Type*",
+      "linkId": "/002-01-06",
+      "questionCodeSystem": "Custom",
+      "questionCode": "002-01-06",
+      "localQuestionCode": "002-01-06",
+      "codingInstructions": "Select from the given list",
+      "questionCardinality": {
+        "min": "1",
+        "max": "1"
+      },
+      "answerCardinality": {
+        "min": "1",
+        "max": "1"
+      },
+      "editable": "1",
+      "answers": [
+        {
+          "text": "Royal Chartered Companies",
+          "code": "002-01-06-01",
+          "system": null,
+          "label": null,
+          "score": null
+        },
+        {
+          "text": "Statutory Companies",
+          "code": "002-01-06-02",
+          "system": null,
+          "label": null,
+          "score": null
+        },
+        {
+          "text": "Registered or Incorporated Companies",
+          "code": "002-01-06-02",
+          "system": null,
+          "label": null,
+          "score": null
+        },
+        {
+          "text": "Companies Limited By Shares",
+          "code": "002-01-06-03",
+          "system": null,
+          "label": null,
+          "score": null
+        },
+        {
+          "text": "Companies Limited By Guarantee",
+          "code": "002-01-06-04",
+          "system": null,
+          "label": null,
+          "score": null
+        },
+        {
+          "text": "Unlimited Companies",
+          "code": "002-01-06-05",
+          "system": null,
+          "label": null,
+          "score": null
+        },
+        {
+          "text": "Public Company (or Public Limited Company)",
+          "code": "002-01-06-06",
+          "system": null,
+          "label": null,
+          "score": null
+        },
+        {
+          "text": "Private Company (or Private Limited Company)",
+          "code": "002-01-06-07",
+          "system": null,
+          "label": null,
+          "score": null
+        },
+        {
+          "text": "One Person Company",
+          "code": "002-01-06-08",
+          "system": null,
+          "label": null,
+          "score": null
+        }
+      ],
+      "displayControl": {
+        "answerLayout": {
+          "type": "COMBO_BOX"
+        }
+      },
+      "codeList": [
+        {
+          "code": "002-01-06",
+          "display": "Company Type*",
+          "system": "Custom"
+        }
+      ],
+      "value": {
+        "text": "Private Company (or Private Limited Company)",
+        "code": "002-01-06-07",
+        "system": null,
+        "label": null,
+        "score": null
+      }
+    },
+    {
+      "header": false,
+      "dataType": "ST",
+      "question": "Registration Number*",
+      "linkId": "/002-01-07",
+      "questionCodeSystem": "Custom",
+      "questionCode": "002-01-07",
+      "codingInstructions": "Institution registration number",
+      "questionCardinality": {
+        "min": "1",
+        "max": "1"
+      },
+      "answerCardinality": {
+        "min": "1",
+        "max": "1"
+      },
+      "editable": "1",
+      "codeList": [
+        {
+          "code": "002-01-07",
+          "display": "Registration Number*",
+          "system": "Custom"
+        }
+      ]
+    },
+    {
+      "header": false,
+      "dataType": "ST",
+      "question": "Industry",
+      "linkId": "/002-01-08",
+      "questionCodeSystem": "Custom",
+      "questionCode": "002-01-08",
+      "localQuestionCode": "002-01-08",
+      "codingInstructions": "Type of industry the institution belongs",
+      "questionCardinality": {
+        "min": "1",
+        "max": "1"
+      },
+      "answerCardinality": {
+        "min": "0",
+        "max": "1"
+      },
+      "editable": "1",
+      "codeList": [
+        {
+          "code": "002-01-08",
+          "display": "Industry",
+          "system": "Custom"
+        }
+      ],
+      "value": "Healthcare, Government and Medical Technology industry"
+    },
+    {
+      "header": false,
+      "dataType": "ST",
+      "question": "Currency",
+      "linkId": "/002-01-09",
+      "questionCodeSystem": "Custom",
+      "questionCode": "002-01-09",
+      "localQuestionCode": "002-01-09",
+      "codingInstructions": "Currency in which institution primarily dealing",
+      "questionCardinality": {
+        "min": "1",
+        "max": "1"
+      },
+      "answerCardinality": {
+        "min": "0",
+        "max": "1"
+      },
+      "editable": "1",
+      "codeList": [
+        {
+          "code": "002-01-09",
+          "display": "Currency",
+          "system": "Custom"
+        }
+      ],
+      "value": "Dollars"
+    },
+    {
+      "header": false,
+      "dataType": "ST",
+      "question": "Net Worth",
+      "linkId": "/002-01-10",
+      "questionCodeSystem": "Custom",
+      "questionCode": "002-01-10",
+      "localQuestionCode": "002-01-10",
+      "codingInstructions": "Networth of the institution",
+      "questionCardinality": {
+        "min": "1",
+        "max": "1"
+      },
+      "answerCardinality": {
+        "min": "0",
+        "max": "1"
+      },
+      "editable": "1",
+      "codeList": [
+        {
+          "code": "002-01-10",
+          "display": "Net Worth",
+          "system": "Custom"
+        }
+      ]
+    },
+    {
+      "header": false,
+      "dataType": "CWE",
+      "question": "Company Size*",
+      "linkId": "/002-01-12",
+      "questionCodeSystem": "Custom",
+      "questionCode": "002-01-12",
+      "localQuestionCode": "002-01-12",
+      "codingInstructions": "Select from the given list",
+      "questionCardinality": {
+        "min": "1",
+        "max": "1"
+      },
+      "answerCardinality": {
+        "min": "1",
+        "max": "1"
+      },
+      "editable": "1",
+      "answers": [
+        {
+          "text": "0-50",
+          "code": "002-01-12-01",
+          "system": null,
+          "label": null,
+          "score": null
+        },
+        {
+          "text": "51-200",
+          "code": "002-01-12-02",
+          "system": null,
+          "label": null,
+          "score": null
+        },
+        {
+          "text": "201-500",
+          "code": "002-01-12-03",
+          "system": null,
+          "label": null,
+          "score": null
+        },
+        {
+          "text": "501-2000",
+          "code": "002-01-12-04",
+          "system": null,
+          "label": null,
+          "score": null
+        },
+        {
+          "text": "&lt;2000",
+          "code": "002-01-12-04",
+          "system": null,
+          "label": null,
+          "score": null
+        }
+      ],
+      "displayControl": {
+        "answerLayout": {
+          "type": "COMBO_BOX"
+        }
+      },
+      "codeList": [
+        {
+          "code": "002-01-12",
+          "display": "Company Size*",
+          "system": "Custom"
+        }
+      ],
+      "value": {
+        "text": "51-200",
+        "code": "002-01-12-02",
+        "system": null,
+        "label": null,
+        "score": null
+      }
+    },
+    {
+      "header": true,
+      "question": "Contact Details",
+      "linkId": "/002-02-00",
+      "questionCodeSystem": "Custom",
+      "questionCode": "002-02-00",
+      "localQuestionCode": "002-02-00",
+      "questionCardinality": {
+        "min": "1",
+        "max": "1"
+      },
+      "answerCardinality": {
+        "min": "0",
+        "max": "1"
+      },
+      "editable": "1",
+      "displayControl": {
+        "questionLayout": "vertical"
+      },
+      "codeList": [
+        {
+          "code": "002-02-00",
+          "display": "Contact Details",
+          "system": "Custom"
+        }
+      ],
+      "items": [
+        {
+          "header": false,
+          "dataType": "ST",
+          "question": "Website*",
+          "linkId": "/002-02-01",
+          "questionCodeSystem": "Custom",
+          "questionCode": "002-02-01",
+          "localQuestionCode": "002-02-01",
+          "codingInstructions": "Institution website url",
+          "questionCardinality": {
+            "min": "1",
+            "max": "1"
+          },
+          "answerCardinality": {
+            "min": "1",
+            "max": "1"
+          },
+          "editable": "1",
+          "codeList": [
+            {
+              "code": "002-02-01",
+              "display": "Website*",
+              "system": "Custom"
+            }
+          ],
+          "value": "https://www.netspective.com"
+        },
+        {
+          "header": false,
+          "dataType": "EMAIL",
+          "question": "Work Email*",
+          "linkId": "/002-02-02",
+          "questionCodeSystem": "Custom",
+          "questionCode": "002-02-02",
+          "localQuestionCode": "002-02-02",
+          "codingInstructions": "Institution contact email id",
+          "questionCardinality": {
+            "min": "1",
+            "max": "1"
+          },
+          "answerCardinality": {
+            "min": "1",
+            "max": "1"
+          },
+          "editable": "1",
+          "codeList": [
+            {
+              "code": "002-02-02",
+              "display": "Work Email*",
+              "system": "Custom"
+            }
+          ],
+          "value": "sales@netspective.com"
+        },
+        {
+          "header": false,
+          "dataType": "ST",
+          "question": "Work Phone*",
+          "linkId": "/002-02-03",
+          "questionCodeSystem": "Custom",
+          "questionCode": "002-02-03",
+          "localQuestionCode": "002-02-03",
+          "codingInstructions": "Institution contact phone number",
+          "questionCardinality": {
+            "min": "1",
+            "max": "1"
+          },
+          "answerCardinality": {
+            "min": "1",
+            "max": "1"
+          },
+          "editable": "1",
+          "codeList": [
+            {
+              "code": "002-02-03",
+              "display": "Work Phone*",
+              "system": "Custom"
+            }
+          ],
+          "value": "(202) 660-1351"
+        },
+        {
+          "header": false,
+          "dataType": "ST",
+          "question": "Another Phone",
+          "linkId": "/002-02-04",
+          "questionCodeSystem": "Custom",
+          "questionCode": "002-02-04",
+          "localQuestionCode": "002-02-04",
+          "codingInstructions": "Alternate phone for contacting the institution",
+          "questionCardinality": {
+            "min": "1",
+            "max": "1"
+          },
+          "answerCardinality": {
+            "min": "0",
+            "max": "1"
+          },
+          "editable": "1",
+          "codeList": [
+            {
+              "code": "002-02-04",
+              "display": "Another Phone",
+              "system": "Custom"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "header": true,
+      "question": "Company Address",
+      "linkId": "/002-02-05",
+      "questionCodeSystem": "Custom",
+      "questionCode": "002-02-05",
+      "localQuestionCode": "002-02-05",
+      "questionCardinality": {
+        "min": "1",
+        "max": "1"
+      },
+      "answerCardinality": {
+        "min": "0",
+        "max": "1"
+      },
+      "editable": "1",
+      "displayControl": {
+        "questionLayout": "vertical"
+      },
+      "codeList": [
+        {
+          "code": "002-02-05",
+          "display": "Company Address",
+          "system": "Custom"
+        }
+      ],
+      "items": [
+        {
+          "header": false,
+          "dataType": "ST",
+          "question": "House/Building*",
+          "linkId": "/002-02-05/002-02-06",
+          "questionCodeSystem": "Custom",
+          "questionCode": "002-02-06",
+          "localQuestionCode": "002-02-06",
+          "codingInstructions": "House/Building name in the physical address of the institution",
+          "questionCardinality": {
+            "min": "1",
+            "max": "1"
+          },
+          "answerCardinality": {
+            "min": "1",
+            "max": "1"
+          },
+          "editable": "1",
+          "codeList": [
+            {
+              "code": "002-02-06",
+              "display": "House/Building*",
+              "system": "Custom"
+            }
+          ],
+          "value": "1802 Brightseat Rd."
+        },
+        {
+          "header": false,
+          "dataType": "ST",
+          "question": "Town/City*",
+          "linkId": "/002-02-05/002-02-07",
+          "questionCodeSystem": "Custom",
+          "questionCode": "002-02-07",
+          "localQuestionCode": "002-02-07",
+          "codingInstructions": "Town/City in the physical address of the institution",
+          "questionCardinality": {
+            "min": "1",
+            "max": "1"
+          },
+          "answerCardinality": {
+            "min": "1",
+            "max": "1"
+          },
+          "editable": "1",
+          "codeList": [
+            {
+              "code": "002-02-07",
+              "display": "Town/City*",
+              "system": "Custom"
+            }
+          ],
+          "value": "Suite 101"
+        },
+        {
+          "header": false,
+          "dataType": "ST",
+          "question": "State/Province*",
+          "linkId": "/002-02-05/002-02-08",
+          "questionCodeSystem": "Custom",
+          "questionCode": "002-02-08",
+          "localQuestionCode": "002-02-08",
+          "codingInstructions": "State/Province in the physical address of the institution",
+          "questionCardinality": {
+            "min": "1",
+            "max": "1"
+          },
+          "answerCardinality": {
+            "min": "1",
+            "max": "1"
+          },
+          "editable": "1",
+          "codeList": [
+            {
+              "code": "002-02-08",
+              "display": "State/Province*",
+              "system": "Custom"
+            }
+          ],
+          "value": "Landover, MD"
+        },
+        {
+          "header": false,
+          "dataType": "ST",
+          "question": "ZIP/Postal Code*",
+          "linkId": "/002-02-05/002-02-09",
+          "questionCodeSystem": "Custom",
+          "questionCode": "002-02-09",
+          "localQuestionCode": "002-02-09",
+          "codingInstructions": "ZIP/Postal Code in the physical address of the institution",
+          "questionCardinality": {
+            "min": "1",
+            "max": "1"
+          },
+          "answerCardinality": {
+            "min": "1",
+            "max": "1"
+          },
+          "editable": "1",
+          "codeList": [
+            {
+              "code": "002-02-09",
+              "display": "ZIP/Postal Code*",
+              "system": "Custom"
+            }
+          ],
+          "value": "20785"
+        },
+        {
+          "header": false,
+          "dataType": "ST",
+          "question": "Country/Region*",
+          "linkId": "/002-02-05/002-02-10",
+          "questionCodeSystem": "Custom",
+          "questionCode": "002-02-10",
+          "localQuestionCode": "002-02-10",
+          "codingInstructions": "Country/Region in the physical address of the institution",
+          "questionCardinality": {
+            "min": "1",
+            "max": "1"
+          },
+          "answerCardinality": {
+            "min": "1",
+            "max": "1"
+          },
+          "editable": "1",
+          "codeList": [
+            {
+              "code": "002-02-10",
+              "display": "Country/Region*",
+              "system": "Custom"
+            }
+          ],
+          "value": "USA"
+        }
+      ]
+    },
+    {
+      "header": false,
+      "dataType": "CNE",
+      "question": "Source of Invitation",
+      "linkId": "/Q002-02-11",
+      "questionCode": "Q002-02-11",
+      "localQuestionCode": "Q002-02-11",
+      "codingInstructions": "The source through which this institution is invited to Medigy. Select from the given list; if blank choose 'www.medigy.com'",
+      "questionCardinality": {
+        "min": "1",
+        "max": "1"
+      },
+      "answerCardinality": {
+        "min": "0",
+        "max": "1"
+      },
+      "editable": "1",
+      "answers": null,
+      "externallyDefined": "https://proxy.ontology.attest.cloud/api/v1/sourceofinvitation/search",
+      "hideUnits": true,
+      "codeList": [
+        {
+          "code": "Q002-02-11",
+          "display": "Source of Invitation"
+        }
+      ]
+    },
+    {
+      "header": false,
+      "dataType": "ST",
+      "question": "CRM Identifier",
+      "linkId": "/002-02-12",
+      "questionCodeSystem": "Custom",
+      "questionCode": "002-02-12",
+      "localQuestionCode": "002-02-12",
+      "questionCardinality": {
+        "min": "1",
+        "max": "1"
+      },
+      "answerCardinality": {
+        "min": "0",
+        "max": "1"
+      },
+      "editable": "1",
+      "codeList": [
+        {
+          "code": "002-02-12",
+          "display": "CRM Identifier",
+          "system": "Custom"
+        }
+      ]
+    },
+    {
+      "header": true,
+      "question": "Github Details",
+      "linkId": "/002-03-00",
+      "questionCodeSystem": "Custom",
+      "questionCode": "002-03-00",
+      "localQuestionCode": "002-03-00",
+      "questionCardinality": {
+        "min": "1",
+        "max": "1"
+      },
+      "answerCardinality": {
+        "min": "0",
+        "max": "1"
+      },
+      "editable": "1",
+      "displayControl": {
+        "questionLayout": "vertical"
+      },
+      "codeList": [
+        {
+          "code": "002-03-00",
+          "display": "Github Details",
+          "system": "Custom"
+        }
+      ],
+      "items": [
+        {
+          "header": false,
+          "dataType": "ST",
+          "question": "Github UserName",
+          "linkId": "/002-02-05/002-02-06",
+          "questionCodeSystem": "Custom",
+          "questionCode": "002-03-01",
+          "localQuestionCode": "002-03-01",
+          "questionCardinality": {
+            "min": "1",
+            "max": "1"
+          },
+          "answerCardinality": {
+            "min": "0",
+            "max": "1"
+          },
+          "editable": "1",
+          "codeList": [
+            {
+              "code": "002-03-01",
+              "display": "Github UserName",
+              "system": "Custom"
+            }
+          ]
+        },
+        {
+          "header": false,
+          "dataType": "ST",
+          "question": "Github Password",
+          "linkId": "/002-02-05/002-02-07",
+          "questionCodeSystem": "Custom",
+          "questionCode": "002-03-02",
+          "localQuestionCode": "002-03-02",
+          "questionCardinality": {
+            "min": "1",
+            "max": "1"
+          },
+          "answerCardinality": {
+            "min": "0",
+            "max": "1"
+          },
+          "editable": "1",
+          "codeList": [
+            {
+              "code": "002-03-02",
+              "display": "Github Password",
+              "system": "Custom"
+            }
+          ]
+        },
+        {
+          "header": false,
+          "dataType": "ST",
+          "question": "Github Client ID",
+          "linkId": "/002-03-03",
+          "questionCodeSystem": "Custom",
+          "questionCode": "002-03-03",
+          "localQuestionCode": "002-03-03",
+          "questionCardinality": {
+            "min": "1",
+            "max": "1"
+          },
+          "answerCardinality": {
+            "min": "0",
+            "max": "1"
+          },
+          "editable": "1",
+          "codeList": [
+            {
+              "code": "002-03-03",
+              "display": "Github Client ID",
+              "system": "Custom"
+            }
+          ]
+        },
+        {
+          "header": false,
+          "dataType": "ST",
+          "question": "Github Client Secret",
+          "linkId": "/002-03-04",
+          "questionCodeSystem": "Custom",
+          "questionCode": "002-03-04",
+          "localQuestionCode": "002-03-04",
+          "questionCardinality": {
+            "min": "1",
+            "max": "1"
+          },
+          "answerCardinality": {
+            "min": "0",
+            "max": "1"
+          },
+          "editable": "1",
+          "codeList": [
+            {
+              "code": "002-03-04",
+              "display": "Github Client Secret",
+              "system": "Custom"
+            }
+          ]
+        },
+        {
+          "header": false,
+          "dataType": "ST",
+          "question": "Github Owner",
+          "linkId": "/002-03-05",
+          "questionCodeSystem": "Custom",
+          "questionCode": "002-03-05",
+          "localQuestionCode": "002-03-05",
+          "questionCardinality": {
+            "min": "1",
+            "max": "1"
+          },
+          "answerCardinality": {
+            "min": "0",
+            "max": "1"
+          },
+          "editable": "1",
+          "codeList": [
+            {
+              "code": "002-03-05",
+              "display": "Github Owner",
+              "system": "Custom"
+            }
+          ]
+        },
+        {
+          "header": false,
+          "dataType": "ST",
+          "question": "Github Repo",
+          "linkId": "/002-03-06",
+          "questionCodeSystem": "Custom",
+          "questionCode": "002-03-06",
+          "localQuestionCode": "002-03-06",
+          "questionCardinality": {
+            "min": "1",
+            "max": "1"
+          },
+          "answerCardinality": {
+            "min": "0",
+            "max": "1"
+          },
+          "editable": "1",
+          "codeList": [
+            {
+              "code": "002-03-06",
+              "display": "Github Repo",
+              "system": "Custom"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "templateOptions": {
+    "showQuestionCode": false,
+    "showCodingInstruction": false,
+    "tabOnInputFieldsOnly": false,
+    "hideFormControls": true,
+    "showFormOptionPanel": false,
+    "showFormOptionPanelButton": false,
+    "showItemOptionPanelButton": false,
+    "hideUnits": true,
+    "allowMultipleEmptyRepeatingItems": false,
+    "allowHTMLInInstructions": true,
+    "useAnimation": true,
+    "displayControl": {
+      "questionLayout": "vertical"
+    },
+    "viewMode": "auto",
+    "showFormHeader": false,
+    "showColumnHeaders": false,
+    "defaultAnswerLayout": {
+      "answerLayout": {
+        "type": "COMBO_BOX",
+        "columns": "0"
+      }
+    },
+    "useTreeLineStyle": true,
+    "columnHeaders": [
+      {
+        "name": "Name"
+      },
+      {
+        "name": "Value"
+      },
+      {
+        "name": "Units"
+      }
+    ],
+    "obrHeader": false,
+    "hideHeader": true
+  }
+}
