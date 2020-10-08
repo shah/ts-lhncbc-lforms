@@ -113,8 +113,8 @@ export interface ItemAnswer {
   code?: string;
   text: string;
   other?: boolean | string;
-  label?: string;
-  score?: number | null;
+  label?: string | null;
+  score?: number | string | null;
   system?: string | null;
   questionCardinality?: Cardinality;
   parentAnswerCode?: string;
@@ -168,6 +168,9 @@ export type ValueElement = string | boolean | number | {
   text?: string;
   code?: string | number;
   other?: boolean | string;
+  system?: string | null;
+  label?: string | null;
+  score?: string | number | null;
 };
 
 export interface DataFormatElement {
