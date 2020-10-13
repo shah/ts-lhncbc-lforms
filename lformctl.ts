@@ -54,7 +54,6 @@ export async function lhcFormJsonTyperCliHandler(
             console.log(
               `Using Deno dynamic import("${destRel}") to validate...`,
             );
-            // deno-lint-ignore no-undef
             import(destRel);
           }
         },
