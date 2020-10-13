@@ -51,3 +51,39 @@ export type UniqueEmailAddressItem = EmailAddressItem & UniqueItem;
 export type UniqueStrictEmailAddressItem = StrictEmailAddressItem & UniqueItem;
 export type UniquePhoneItem = PhoneItem & UniqueItem;
 export type UniqueStrictPhoneItem = StrictPhoneItem & UniqueItem;
+
+export interface MultiLineTextItem extends FormItem {
+  readonly dataType: "TX";
+}
+
+export function isMultiLineTextItem(i: FormItem): i is MultiLineTextItem {
+  return i.dataType == "TX";
+}
+
+export type UniqueMultiLineTextItem = MultiLineTextItem & UniqueItem;
+
+export interface DateItem extends FormItem {
+  readonly dataType: "DT";
+}
+
+export function isDateItem(i: FormItem): i is DateItem {
+  return i.dataType == "DT";
+}
+
+export type UniqueDateItem = DateItem & UniqueItem;
+
+export interface RequiredSingleAnswer {
+  readonly answerCardinality: { min: 0 | 1; max: 1 };
+  readonly editable?: 1;
+}
+
+export interface RequiredMultipleAnswers {
+  readonly answerCardinality: { min: 1; max: "*" };
+}
+
+export type RequiredUniqueTextItem = UniqueTextItem & RequiredSingleAnswer;
+
+export interface ConstrainedListItemValue extends FormItem {
+  readonly text: string;
+  readonly code?: string | number;
+}
