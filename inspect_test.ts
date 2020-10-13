@@ -1,28 +1,25 @@
-import {
-  LhcFormVisitorContext,
-  sectionsIndex,
-  visitLhcFormItems,
-} from "./inspect.ts";
-import type { FormItem, NihLhcForm } from "./lform.ts";
+import { testingAsserts as ta } from "./deps-test.ts";
+import { inspect as insp } from "./deps.ts";
+import * as mod from "./inspect.ts";
+import type { NihLhcForm } from "./lform.ts";
 
-/**
- * This is not a proper unit test, it's just a testing utility
- * TODO: either delete this file or turn it into a proper unit test
- */
-Deno.test(`Test inspect`, async () => {
-  const lhcForm: NihLhcForm = JSON.parse(
-    Deno.readTextFileSync("./test4-offering-profile.lhc-form.json"),
+export async function inspectForm(
+  ctx: mod.LhcFormInspectionContext,
+  active: mod.LhcFormInspectionResult,
+): Promise<mod.LhcFormInspectionResult> {
+  // TODO put in some rules here
+  return mod.lhcFormInspectionSuccess(active.inspectionTarget);
+}
+
+Deno.test(`word count matches expectations`, async () => {
+  const lform: NihLhcForm = JSON.parse(
+    Deno.readTextFileSync("test1-with-error.lhc-form.json"),
   );
-  const sects = sectionsIndex(lhcForm.items);
-  console.dir(Object.keys(sects));
-  visitLhcFormItems({
-    form: lhcForm,
-    handler: (
-      ctx: LhcFormVisitorContext,
-      item: FormItem,
-      ...ancestors: FormItem[]
-    ): void => {
-      console.log(ancestors.length, item.header, item.question);
-    },
-  });
+  const ctx = new mod.TypicalLhcFormInspectionContext(lform);
+  const ip = insp.inspectionPipe(ctx, inspectForm);
+  const result = await ip(ctx);
+
+  ta.assert(mod.isSuccessfulLhcFormInspection(result));
+  ta.assertEquals(ctx.diags.issues.length, 0);
+  ta.assertEquals(ctx.diags.exceptions.length, 0);
 });
