@@ -11,7 +11,7 @@ export async function inspectForm(
   return mod.lhcFormInspectionSuccess(active.inspectionTarget);
 }
 
-Deno.test(`word count matches expectations`, async () => {
+Deno.test(`inspect form (TODO: add rules)`, async () => {
   const lform: NihLhcForm = JSON.parse(
     Deno.readTextFileSync("test1-with-error.lhc-form.json"),
   );

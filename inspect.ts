@@ -19,16 +19,53 @@ export const isSuccessfulLhcFormInspection = insp.isSuccessfulInspection;
 export interface LhcFormInspectionIssue<
   F extends lf.NihLhcForm = lf.NihLhcForm,
 > extends insp.InspectionIssue<F>, insp.DiagnosableInspectionResult<string> {
+  isLhcFormInspectionIssue: true;
 }
 
-export const lchFormIssue = insp.inspectionIssue;
-export const isLhcFormInspectionIssue = insp.isInspectionIssue;
-export const isDiagnosableLhcFormInspectionIssue =
-  insp.isDiagnosableInspectionResult;
+export const isLhcFormInspectionIssue = safety.typeGuardCustom<
+  LhcFormInspectionResult<lf.NihLhcForm>,
+  LhcFormInspectionIssue<lf.NihLhcForm>
+>("isLhcFormInspectionIssue");
+
+export function lchFormIssue<F extends lf.NihLhcForm = lf.NihLhcForm>(
+  form: F,
+  message: string,
+): LhcFormInspectionIssue<F> {
+  return {
+    isInspectionResult: true,
+    isInspectionIssue: true,
+    isLhcFormInspectionIssue: true,
+    inspectionTarget: form,
+    inspectionDiagnostic: message,
+  };
+}
 
 export interface LhcFormItemInspectionIssue<
+  F extends lf.NihLhcForm = lf.NihLhcForm,
   I extends lf.FormItem = lf.FormItem,
-> extends insp.InspectionIssue<I>, insp.DiagnosableInspectionResult<string> {
+> extends LhcFormInspectionIssue<F> {
+  isLhcFormItemInspectionIssue: true;
+  item: I;
+}
+
+export const isLhcFormItemInspectionIssue = safety.typeGuardCustom<
+  LhcFormInspectionResult<lf.NihLhcForm>,
+  LhcFormItemInspectionIssue<lf.NihLhcForm>
+>("isLhcFormInspectionIssue", "isLhcFormItemInspectionIssue");
+
+export function lchFormItemIssue<
+  F extends lf.NihLhcForm = lf.NihLhcForm,
+  I extends lf.FormItem = lf.FormItem,
+>(
+  form: F,
+  item: I,
+  message: string,
+): LhcFormItemInspectionIssue<F, I> {
+  return {
+    ...lchFormIssue(form, message),
+    isLhcFormItemInspectionIssue: true,
+    item: item,
+  };
 }
 
 // deno-lint-ignore no-empty-interface
