@@ -7,13 +7,6 @@ export interface LhcFormInspectionResult<
 > extends insp.InspectionResult<F> {
 }
 
-// deno-lint-ignore no-empty-interface
-export interface SuccessfulLhcFormInspection<
-  F extends lf.NihLhcForm = lf.NihLhcForm,
-> extends insp.SuccessfulInspection<F> {
-}
-
-export const lhcFormInspectionSuccess = insp.successfulInspection;
 export const isSuccessfulLhcFormInspection = insp.isSuccessfulInspection;
 
 export interface LhcFormInspectionIssue<
@@ -78,24 +71,25 @@ export interface LhcFormInspectionContext<
 export interface LhcFormSanitizerContext {
 }
 
+export function sanitizeForm<
+  F extends lf.NihLhcForm = lf.NihLhcForm,
+>(
+  content: F,
+  sanitize?: safety.TransformerSync<
+    LhcFormSanitizerContext,
+    F
+  >,
+): F {
+  return sanitize ? sanitize.transform(content) : content;
+}
+
 export class TypicalLhcFormInspectionContext<
   F extends lf.NihLhcForm = lf.NihLhcForm,
 > implements LhcFormInspectionContext<F> {
-  readonly inspectionTarget: F;
   readonly diags = new insp.InspectionDiagnosticsRecorder<
     F,
     insp.InspectionContext<F>
   >();
-
-  constructor(
-    content: F,
-    sanitize?: safety.TransformerSync<
-      LhcFormSanitizerContext,
-      F
-    >,
-  ) {
-    this.inspectionTarget = sanitize ? sanitize.transform(content) : content;
-  }
 }
 
 export interface LhcFormInspector<

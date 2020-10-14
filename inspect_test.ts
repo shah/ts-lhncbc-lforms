@@ -8,16 +8,16 @@ export async function inspectForm(
   active: mod.LhcFormInspectionResult,
 ): Promise<mod.LhcFormInspectionResult> {
   // TODO put in some rules here
-  return mod.lhcFormInspectionSuccess(active.inspectionTarget);
+  return active;
 }
 
 Deno.test(`inspect form (TODO: add rules)`, async () => {
   const lform: NihLhcForm = JSON.parse(
     Deno.readTextFileSync("test1-with-error.lhc-form.json"),
   );
-  const ctx = new mod.TypicalLhcFormInspectionContext(lform);
+  const ctx = new mod.TypicalLhcFormInspectionContext();
   const ip = insp.inspectionPipe(inspectForm);
-  const result = await ip(ctx);
+  const result = await ip(ctx, lform);
 
   ta.assert(mod.isSuccessfulLhcFormInspection(result));
   ta.assertEquals(ctx.diags.issues.length, 0);
