@@ -92,6 +92,17 @@ export class TypicalLhcFormInspectionContext<
   >();
 }
 
+export class ConsoleLhcFormInspectionContext<
+  F extends lf.NihLhcForm = lf.NihLhcForm,
+> implements LhcFormInspectionContext<F> {
+  readonly diags = new insp.ConsoleInspectionDiagnostics(
+    new insp.InspectionDiagnosticsRecorder<
+      F,
+      insp.InspectionContext<F>
+    >(),
+  );
+}
+
 export interface LhcFormInspector<
   F extends lf.NihLhcForm = lf.NihLhcForm,
 > extends insp.Inspector<F, LhcFormInspectionContext<F>> {
