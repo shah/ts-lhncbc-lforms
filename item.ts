@@ -74,7 +74,7 @@ export type UniqueDateItem = DateItem & UniqueItem;
 
 export interface RequiredSingleAnswer {
   readonly answerCardinality: { min: 0 | 1; max: 1 };
-  readonly editable?: 1;
+  readonly editable?: 1 | string;
 }
 
 export interface RequiredMultipleAnswers {
@@ -86,4 +86,37 @@ export type RequiredUniqueTextItem = UniqueTextItem & RequiredSingleAnswer;
 export interface ConstrainedListItemValue extends FormItem {
   readonly text: string;
   readonly code?: string | number;
+  readonly system?: string | null;
+  readonly label?: string | null;
+  readonly score?: string | null | number;
 }
+
+export interface ContactAddressItem extends FormItem {
+  readonly items: [
+    houseOrBuilding,
+    townOrCity,
+    stateOrProvince,
+    zipOrPostal,
+    CountryOrRegion,
+  ];
+}
+export interface houseOrBuilding extends FormItem {
+  readonly dataType?: "ST";
+}
+export interface townOrCity extends FormItem {
+  readonly dataType?: "ST";
+}
+export interface stateOrProvince extends FormItem {
+  readonly dataType: "ST";
+}
+export interface zipOrPostal extends FormItem {
+  readonly dataType: "ST" | "NUMBER";
+}
+export interface CountryOrRegion extends FormItem {
+  readonly dataType: "ST";
+}
+export interface CurrencyItem extends FormItem {
+  readonly dataType?: "ST";
+}
+
+export type UniqueCurrencyItem = CurrencyItem & UniqueItem;
