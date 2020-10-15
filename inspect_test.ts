@@ -20,6 +20,6 @@ Deno.test(`inspect form (TODO: add rules)`, async () => {
   const result = await ip(ctx, lform);
 
   ta.assert(mod.isSuccessfulLhcFormInspection(result));
-  ta.assertEquals(ctx.diags.issues.length, 0);
-  ta.assertEquals(ctx.diags.exceptions.length, 0);
+  ta.assertEquals(ctx.inspectionDiags.inspectionIssues.length, 0);
+  ta.assertEquals(ctx.inspectionDiags.inspectionExceptions.length, 0);
 });

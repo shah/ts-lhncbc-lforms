@@ -86,7 +86,7 @@ export function sanitizeForm<
 export class TypicalLhcFormInspectionContext<
   F extends lf.NihLhcForm = lf.NihLhcForm,
 > implements LhcFormInspectionContext<F> {
-  readonly diags = new insp.InspectionDiagnosticsRecorder<
+  readonly inspectionDiags = new insp.InspectionDiagnosticsRecorder<
     F,
     insp.InspectionContext<F>
   >();
@@ -95,14 +95,14 @@ export class TypicalLhcFormInspectionContext<
 export class ConsoleLhcFormInspectionContext<
   F extends lf.NihLhcForm = lf.NihLhcForm,
 > implements LhcFormInspectionContext<F> {
-  readonly diags: insp.ConsoleInspectionDiagnostics<
+  readonly inspectionDiags: insp.ConsoleInspectionDiagnostics<
     F,
     LhcFormInspectionContext<F>,
     string
   >;
 
   constructor(verbose: boolean) {
-    this.diags = new insp.ConsoleInspectionDiagnostics(
+    this.inspectionDiags = new insp.ConsoleInspectionDiagnostics(
       new insp.InspectionDiagnosticsRecorder<
         F,
         insp.InspectionContext<F>
