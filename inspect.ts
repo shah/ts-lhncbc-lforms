@@ -95,12 +95,21 @@ export class TypicalLhcFormInspectionContext<
 export class ConsoleLhcFormInspectionContext<
   F extends lf.NihLhcForm = lf.NihLhcForm,
 > implements LhcFormInspectionContext<F> {
-  readonly diags = new insp.ConsoleInspectionDiagnostics(
-    new insp.InspectionDiagnosticsRecorder<
-      F,
-      insp.InspectionContext<F>
-    >(),
-  );
+  readonly diags: insp.ConsoleInspectionDiagnostics<
+    F,
+    LhcFormInspectionContext<F>,
+    string
+  >;
+
+  constructor(verbose: boolean) {
+    this.diags = new insp.ConsoleInspectionDiagnostics(
+      new insp.InspectionDiagnosticsRecorder<
+        F,
+        insp.InspectionContext<F>
+      >(),
+      verbose,
+    );
+  }
 }
 
 export interface LhcFormInspector<
