@@ -93,23 +93,23 @@ export interface ConstrainedListItemValue extends FormItem {
 
 export interface ContactAddressItem extends FormItem {
   readonly items: [
-    houseOrBuilding,
-    townOrCity,
-    stateOrProvince,
-    zipOrPostal,
+    HouseOrBuilding,
+    TownOrCity,
+    StateOrProvince,
+    ZipOrPostal,
     CountryOrRegion,
   ];
 }
-export interface houseOrBuilding extends FormItem {
+export interface HouseOrBuilding extends FormItem {
   readonly dataType?: "ST";
 }
-export interface townOrCity extends FormItem {
+export interface TownOrCity extends FormItem {
   readonly dataType?: "ST";
 }
-export interface stateOrProvince extends FormItem {
+export interface StateOrProvince extends FormItem {
   readonly dataType: "ST";
 }
-export interface zipOrPostal extends FormItem {
+export interface ZipOrPostal extends FormItem {
   readonly dataType: "ST" | "NUMBER";
 }
 export interface CountryOrRegion extends FormItem {
