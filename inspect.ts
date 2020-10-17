@@ -68,7 +68,7 @@ export function lchFormItemIssue<
   form: F,
   item: I,
   message: string,
-): LhcFormItemInspectionIssue<F, I> {
+): LhcFormItemInspectionIssue<F, I> & insp.Diagnosable<string> {
   return {
     ...lchFormIssue(form, message),
     item: item,
