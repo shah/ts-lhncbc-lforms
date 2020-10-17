@@ -131,7 +131,23 @@ export class ConsoleLhcFormInspectionDiags<
   F,
   string,
   Error
-> {
+> implements LhcFormInspectionDiagnostics<F> {
+  async onFormIssue(
+    target: F,
+    diagnostic: string,
+  ): Promise<LhcFormInspectionResult<F>> {
+    return await this.wrap.onPreparedIssue(lchFormIssue<F>(target, diagnostic));
+  }
+
+  async onFormItemIssue(
+    form: F,
+    item: lf.FormItem,
+    diagnostic: string,
+  ): Promise<LhcFormInspectionResult<F>> {
+    return await this.wrap.onPreparedIssue(
+      lchFormItemIssue<F>(form, item, diagnostic),
+    );
+  }
 }
 
 export class DerivedLhcFormInspectionDiags<
@@ -142,7 +158,27 @@ export class DerivedLhcFormInspectionDiags<
   string,
   Error,
   W
-> {
+> implements LhcFormInspectionDiagnostics<F> {
+  async onFormIssue(
+    target: F,
+    diagnostic: string,
+  ): Promise<LhcFormInspectionResult<F>> {
+    const issue = lchFormIssue<F>(target, diagnostic);
+    const wrapped = insp.wrapInspectionIssue(issue, this.parent);
+    await this.parentDiags.onPreparedIssue(wrapped);
+    return issue;
+  }
+
+  async onFormItemIssue(
+    form: F,
+    item: lf.FormItem,
+    diagnostic: string,
+  ): Promise<LhcFormInspectionResult<F>> {
+    const issue = lchFormItemIssue<F>(form, item, diagnostic);
+    const wrapped = insp.wrapInspectionIssue(issue, this.parent);
+    await this.parentDiags.onPreparedIssue(wrapped);
+    return issue;
+  }
 }
 
 export interface LchFormInspector<F extends lf.NihLhcForm = lf.NihLhcForm>
