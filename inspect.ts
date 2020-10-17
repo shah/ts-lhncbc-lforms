@@ -95,7 +95,10 @@ export interface LhcFormInspectionDiagnostics<
 
   readonly onFormInspection: <IR>(
     target: F,
-    inspResult: insp.InspectionResult<IR> | insp.InspectionResultSupplier<IR>,
+    inspResult:
+      | insp.InspectionResult<IR>
+      | insp.InspectionResultSupplier<IR>
+      | unknown,
   ) => Promise<LhcFormInspectionResult<F> | undefined>;
 
   readonly onFormItemIssue: (
@@ -107,7 +110,10 @@ export interface LhcFormInspectionDiagnostics<
   readonly onFormItemInspection: <IR>(
     form: F,
     item: lf.FormItem,
-    inspResult: insp.InspectionResult<IR> | insp.InspectionResultSupplier<IR>,
+    inspResult:
+      | insp.InspectionResult<IR>
+      | insp.InspectionResultSupplier<IR>
+      | unknown,
   ) => Promise<LhcFormInspectionResult<F> | undefined>;
 }
 
@@ -127,7 +133,10 @@ export class TypicalLhcFormInspectionDiags<
 
   async onFormInspection<IR>(
     target: F,
-    inspResult: insp.InspectionResult<IR> | insp.InspectionResultSupplier<IR>,
+    inspResult:
+      | insp.InspectionResult<IR>
+      | insp.InspectionResultSupplier<IR>
+      | unknown,
   ): Promise<LhcFormInspectionResult<F> | undefined> {
     if (
       insp.isInspectionIssue<IR>(inspResult) &&
@@ -150,7 +159,10 @@ export class TypicalLhcFormInspectionDiags<
   async onFormItemInspection<IR>(
     form: F,
     item: lf.FormItem,
-    inspResult: insp.InspectionResult<IR> | insp.InspectionResultSupplier<IR>,
+    inspResult:
+      | insp.InspectionResult<IR>
+      | insp.InspectionResultSupplier<IR>
+      | unknown,
   ): Promise<LhcFormInspectionResult<F> | undefined> {
     if (
       insp.isInspectionIssue<IR>(inspResult) &&
@@ -177,7 +189,10 @@ export class ConsoleLhcFormInspectionDiags<
 
   async onFormInspection<IR>(
     target: F,
-    inspResult: insp.InspectionResult<IR> | insp.InspectionResultSupplier<IR>,
+    inspResult:
+      | insp.InspectionResult<IR>
+      | insp.InspectionResultSupplier<IR>
+      | unknown,
   ): Promise<LhcFormInspectionResult<F> | undefined> {
     if (
       insp.isInspectionIssue<IR>(inspResult) &&
@@ -200,7 +215,10 @@ export class ConsoleLhcFormInspectionDiags<
   async onFormItemInspection<IR>(
     form: F,
     item: lf.FormItem,
-    inspResult: insp.InspectionResult<IR> | insp.InspectionResultSupplier<IR>,
+    inspResult:
+      | insp.InspectionResult<IR>
+      | insp.InspectionResultSupplier<IR>
+      | unknown,
   ): Promise<LhcFormInspectionResult<F> | undefined> {
     if (
       insp.isInspectionIssue<IR>(inspResult) &&
@@ -229,7 +247,10 @@ export class DerivedLhcFormInspectionDiags<
 
   async onFormInspection<IR>(
     target: F,
-    inspResult: insp.InspectionResult<IR> | insp.InspectionResultSupplier<IR>,
+    inspResult:
+      | insp.InspectionResult<IR>
+      | insp.InspectionResultSupplier<IR>
+      | unknown,
   ): Promise<LhcFormInspectionResult<F> | undefined> {
     if (
       insp.isInspectionIssue<IR>(inspResult) &&
@@ -252,7 +273,10 @@ export class DerivedLhcFormInspectionDiags<
   async onFormItemInspection<IR>(
     form: F,
     item: lf.FormItem,
-    inspResult: insp.InspectionResult<IR> | insp.InspectionResultSupplier<IR>,
+    inspResult:
+      | insp.InspectionResult<IR>
+      | insp.InspectionResultSupplier<IR>
+      | unknown,
   ): Promise<LhcFormInspectionResult<F> | undefined> {
     if (
       insp.isInspectionIssue<IR>(inspResult) &&
