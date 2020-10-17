@@ -1,5 +1,11 @@
+import { inspect as insp } from "./deps.ts";
 import type * as lf from "./lform.ts";
-import { inspect as insp, safety } from "./deps.ts";
+
+export function lhcFormInspectionPipe<F extends lf.NihLhcForm>(
+  ...inspectors: insp.Inspector<F, string>[]
+): insp.InspectionPipe<F, string> {
+  return insp.inspectionPipe(...inspectors);
+}
 
 // deno-lint-ignore no-empty-interface
 export interface LhcFormInspectionResult<
@@ -7,29 +13,32 @@ export interface LhcFormInspectionResult<
 > extends insp.InspectionResult<F> {
 }
 
-export const isSuccessfulLhcFormInspection = insp.isSuccessfulInspection;
+export const isLhcFormInspectionResult = insp.isInspectionResult;
 
-export interface LhcFormInspectionIssue<
-  F extends lf.NihLhcForm = lf.NihLhcForm,
-> extends insp.InspectionIssue<F>, insp.DiagnosableInspectionResult<string> {
-  isLhcFormInspectionIssue: true;
+// deno-lint-ignore no-empty-interface
+export interface LhcFormInspectionOptions extends insp.InspectionOptions {
 }
 
-export const isLhcFormInspectionIssue = safety.typeGuardCustom<
-  LhcFormInspectionResult<lf.NihLhcForm>,
-  LhcFormInspectionIssue<lf.NihLhcForm>
->("isLhcFormInspectionIssue");
+export const isSuccessfulLhcFormInspection = insp.isSuccessfulInspection;
+
+// deno-lint-ignore no-empty-interface
+export interface LhcFormInspectionIssue<
+  F extends lf.NihLhcForm = lf.NihLhcForm,
+> extends insp.InspectionIssue<F> {
+}
+
+export const isLhcFormInspectionIssue = insp.isInspectionIssue;
+export const isDiagnosableLhcFormInspectionIssue = insp.isDiagnosable;
 
 export function lchFormIssue<F extends lf.NihLhcForm = lf.NihLhcForm>(
   form: F,
   message: string,
-): LhcFormInspectionIssue<F> {
+): LhcFormInspectionIssue<F> & insp.Diagnosable<string> {
   return {
     isInspectionResult: true,
     isInspectionIssue: true,
-    isLhcFormInspectionIssue: true,
     inspectionTarget: form,
-    inspectionDiagnostic: message,
+    diagnostic: message,
   };
 }
 
@@ -37,14 +46,8 @@ export interface LhcFormItemInspectionIssue<
   F extends lf.NihLhcForm = lf.NihLhcForm,
   I extends lf.FormItem = lf.FormItem,
 > extends LhcFormInspectionIssue<F> {
-  isLhcFormItemInspectionIssue: true;
   item: I;
 }
-
-export const isLhcFormItemInspectionIssue = safety.typeGuardCustom<
-  LhcFormInspectionResult<lf.NihLhcForm>,
-  LhcFormItemInspectionIssue<lf.NihLhcForm>
->("isLhcFormInspectionIssue", "isLhcFormItemInspectionIssue");
 
 export function lchFormItemIssue<
   F extends lf.NihLhcForm = lf.NihLhcForm,
@@ -56,67 +59,54 @@ export function lchFormItemIssue<
 ): LhcFormItemInspectionIssue<F, I> {
   return {
     ...lchFormIssue(form, message),
-    isLhcFormItemInspectionIssue: true,
     item: item,
   };
 }
 
 // deno-lint-ignore no-empty-interface
-export interface LhcFormInspectionContext<
+export interface LhcFormInspectionDiagnostics<
   F extends lf.NihLhcForm = lf.NihLhcForm,
-> extends insp.InspectionContext<F> {
-}
-
-// deno-lint-ignore no-empty-interface
-export interface LhcFormSanitizerContext {
-}
-
-export function sanitizeForm<
-  F extends lf.NihLhcForm = lf.NihLhcForm,
->(
-  content: F,
-  sanitize?: safety.TransformerSync<
-    LhcFormSanitizerContext,
-    F
-  >,
-): F {
-  return sanitize ? sanitize.transform(content) : content;
-}
-
-export class TypicalLhcFormInspectionContext<
-  F extends lf.NihLhcForm = lf.NihLhcForm,
-> implements LhcFormInspectionContext<F> {
-  readonly inspectionDiags = new insp.InspectionDiagnosticsRecorder<
+> extends
+  insp.InspectionDiagnostics<
     F,
-    insp.InspectionContext<F>
-  >();
+    string,
+    Error
+  > {
 }
 
-export class ConsoleLhcFormInspectionContext<
+export class TypicalLhcFormInspectionDiags<
   F extends lf.NihLhcForm = lf.NihLhcForm,
-> implements LhcFormInspectionContext<F> {
-  readonly inspectionDiags: insp.ConsoleInspectionDiagnostics<
-    F,
-    LhcFormInspectionContext<F>,
-    string
-  >;
-
-  constructor(verbose: boolean) {
-    this.inspectionDiags = new insp.ConsoleInspectionDiagnostics(
-      new insp.InspectionDiagnosticsRecorder<
-        F,
-        insp.InspectionContext<F>
-      >(),
-      verbose,
-    );
-  }
+> extends insp.InspectionDiagnosticsRecorder<
+  F,
+  string,
+  Error
+> {
 }
 
-export interface LhcFormInspector<
+export class ConsoleLhcFormInspectionDiags<
   F extends lf.NihLhcForm = lf.NihLhcForm,
-> extends insp.Inspector<F, LhcFormInspectionContext<F>> {
+> extends insp.ConsoleInspectionDiagnostics<
+  F,
+  string,
+  Error
+> {
+}
+
+export class DerivedLhcFormInspectionDiags<
+  F extends lf.NihLhcForm,
+  W,
+> extends insp.WrappedInspectionDiagnostics<
+  F,
+  string,
+  Error,
+  W
+> {
+}
+
+export interface LchFormInspector<F extends lf.NihLhcForm = lf.NihLhcForm>
+  extends insp.Inspector<F, LhcFormInspectionDiagnostics<F>, Error> {
   (
-    ctx: LhcFormInspectionContext<F>,
-    active: LhcFormInspectionResult<F>,
-  ): Promise<insp.InspectionResult<F>>;
+    target: F | LhcFormInspectionResult<F>,
+    diags?: LhcFormInspectionDiagnostics<F>,
+  ): Promise<F | LhcFormInspectionResult<F>>;
 }
