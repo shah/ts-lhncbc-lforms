@@ -2,8 +2,13 @@ import { inspect as insp } from "./deps.ts";
 import type * as lf from "./lform.ts";
 
 export function lhcFormInspectionPipe<F extends lf.NihLhcForm>(
-  ...inspectors: insp.Inspector<F, string>[]
-): insp.InspectionPipe<F, string> {
+  ...inspectors: insp.Inspector<
+    F,
+    string,
+    Error,
+    LhcFormInspectionDiagnostics<F>
+  >[]
+): insp.InspectionPipe<F, string, Error, LhcFormInspectionDiagnostics<F>> {
   return insp.inspectionPipe(...inspectors);
 }
 
@@ -75,7 +80,6 @@ export function lchFormItemIssue<
   };
 }
 
-// deno-lint-ignore no-empty-interface
 export interface LhcFormInspectionDiagnostics<
   F extends lf.NihLhcForm = lf.NihLhcForm,
 > extends
@@ -84,6 +88,16 @@ export interface LhcFormInspectionDiagnostics<
     string,
     Error
   > {
+  readonly onFormIssue: (
+    target: F,
+    diagnostic: string,
+  ) => Promise<LhcFormInspectionResult<F>>;
+
+  readonly onFormItemIssue: (
+    form: F,
+    target: lf.FormItem,
+    diagnostic: string,
+  ) => Promise<LhcFormInspectionResult<F>>;
 }
 
 export class TypicalLhcFormInspectionDiags<
@@ -92,7 +106,23 @@ export class TypicalLhcFormInspectionDiags<
   F,
   string,
   Error
-> {
+> implements LhcFormInspectionDiagnostics<F> {
+  async onFormIssue(
+    target: F,
+    diagnostic: string,
+  ): Promise<LhcFormInspectionResult<F>> {
+    return await this.onPreparedIssue(lchFormIssue<F>(target, diagnostic));
+  }
+
+  async onFormItemIssue(
+    form: F,
+    item: lf.FormItem,
+    diagnostic: string,
+  ): Promise<LhcFormInspectionResult<F>> {
+    return await this.onPreparedIssue(
+      lchFormItemIssue<F>(form, item, diagnostic),
+    );
+  }
 }
 
 export class ConsoleLhcFormInspectionDiags<
@@ -116,7 +146,13 @@ export class DerivedLhcFormInspectionDiags<
 }
 
 export interface LchFormInspector<F extends lf.NihLhcForm = lf.NihLhcForm>
-  extends insp.Inspector<F, LhcFormInspectionDiagnostics<F>, Error> {
+  extends
+    insp.Inspector<
+      F,
+      string,
+      Error,
+      LhcFormInspectionDiagnostics<F>
+    > {
   (
     target: F | LhcFormInspectionResult<F>,
     diags?: LhcFormInspectionDiagnostics<F>,

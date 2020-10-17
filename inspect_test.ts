@@ -16,7 +16,7 @@ Deno.test(`inspect form (TODO: add rules)`, async () => {
     Deno.readTextFileSync("test1-with-error.lhc-form.json"),
   );
   const diags = new mod.TypicalLhcFormInspectionDiags();
-  const ip = insp.inspectionPipe(inspectForm);
+  const ip = mod.lhcFormInspectionPipe(inspectForm);
   const result = await ip(lform, diags);
 
   ta.assert(mod.isSuccessfulLhcFormInspection(result));
