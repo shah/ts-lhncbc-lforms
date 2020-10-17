@@ -27,8 +27,11 @@ export interface LhcFormInspectionIssue<
 > extends insp.InspectionIssue<F> {
 }
 
-export const isLhcFormInspectionIssue = insp.isInspectionIssue;
-export const isDiagnosableLhcFormInspectionIssue = insp.isDiagnosable;
+export function isLhcFormInspectionIssue<
+  F extends lf.NihLhcForm = lf.NihLhcForm,
+>(o: unknown): o is (LhcFormInspectionIssue<F> & insp.Diagnosable<string>) {
+  return insp.isInspectionIssue<F>(o) && insp.isDiagnosable<string>(o);
+}
 
 export function lchFormIssue<F extends lf.NihLhcForm = lf.NihLhcForm>(
   form: F,
@@ -47,6 +50,15 @@ export interface LhcFormItemInspectionIssue<
   I extends lf.FormItem = lf.FormItem,
 > extends LhcFormInspectionIssue<F> {
   item: I;
+}
+
+export function isLhcFormItemInspectionIssue<
+  F extends lf.NihLhcForm = lf.NihLhcForm,
+  I extends lf.FormItem = lf.FormItem,
+>(
+  o: unknown,
+): o is (LhcFormItemInspectionIssue<F, I> & insp.Diagnosable<string>) {
+  return isLhcFormInspectionIssue<F>(o) && "item" in o;
 }
 
 export function lchFormItemIssue<
