@@ -93,11 +93,22 @@ export interface LhcFormInspectionDiagnostics<
     diagnostic: string,
   ) => Promise<LhcFormInspectionResult<F>>;
 
+  readonly onFormInspection: <IR>(
+    target: F,
+    inspResult: insp.InspectionResult<IR> | insp.InspectionResultSupplier<IR>,
+  ) => Promise<LhcFormInspectionResult<F> | undefined>;
+
   readonly onFormItemIssue: (
     form: F,
-    target: lf.FormItem,
+    item: lf.FormItem,
     diagnostic: string,
   ) => Promise<LhcFormInspectionResult<F>>;
+
+  readonly onFormItemInspection: <IR>(
+    form: F,
+    item: lf.FormItem,
+    inspResult: insp.InspectionResult<IR> | insp.InspectionResultSupplier<IR>,
+  ) => Promise<LhcFormInspectionResult<F> | undefined>;
 }
 
 export class TypicalLhcFormInspectionDiags<
@@ -114,6 +125,18 @@ export class TypicalLhcFormInspectionDiags<
     return await this.onPreparedIssue(lchFormIssue<F>(target, diagnostic));
   }
 
+  async onFormInspection<IR>(
+    target: F,
+    inspResult: insp.InspectionResult<IR> | insp.InspectionResultSupplier<IR>,
+  ): Promise<LhcFormInspectionResult<F> | undefined> {
+    if (
+      insp.isInspectionIssue<IR>(inspResult) &&
+      insp.isDiagnosable<string>(inspResult)
+    ) {
+      return await this.onFormIssue(target, inspResult.diagnostic);
+    }
+  }
+
   async onFormItemIssue(
     form: F,
     item: lf.FormItem,
@@ -122,6 +145,19 @@ export class TypicalLhcFormInspectionDiags<
     return await this.onPreparedIssue(
       lchFormItemIssue<F>(form, item, diagnostic),
     );
+  }
+
+  async onFormItemInspection<IR>(
+    form: F,
+    item: lf.FormItem,
+    inspResult: insp.InspectionResult<IR> | insp.InspectionResultSupplier<IR>,
+  ): Promise<LhcFormInspectionResult<F> | undefined> {
+    if (
+      insp.isInspectionIssue<IR>(inspResult) &&
+      insp.isDiagnosable<string>(inspResult)
+    ) {
+      return await this.onFormItemIssue(form, item, inspResult.diagnostic);
+    }
   }
 }
 
@@ -139,6 +175,18 @@ export class ConsoleLhcFormInspectionDiags<
     return await this.onPreparedIssue(lchFormIssue<F>(target, diagnostic));
   }
 
+  async onFormInspection<IR>(
+    target: F,
+    inspResult: insp.InspectionResult<IR> | insp.InspectionResultSupplier<IR>,
+  ): Promise<LhcFormInspectionResult<F> | undefined> {
+    if (
+      insp.isInspectionIssue<IR>(inspResult) &&
+      insp.isDiagnosable<string>(inspResult)
+    ) {
+      return await this.onFormIssue(target, inspResult.diagnostic);
+    }
+  }
+
   async onFormItemIssue(
     form: F,
     item: lf.FormItem,
@@ -147,6 +195,19 @@ export class ConsoleLhcFormInspectionDiags<
     return await this.onPreparedIssue(
       lchFormItemIssue<F>(form, item, diagnostic),
     );
+  }
+
+  async onFormItemInspection<IR>(
+    form: F,
+    item: lf.FormItem,
+    inspResult: insp.InspectionResult<IR> | insp.InspectionResultSupplier<IR>,
+  ): Promise<LhcFormInspectionResult<F> | undefined> {
+    if (
+      insp.isInspectionIssue<IR>(inspResult) &&
+      insp.isDiagnosable<string>(inspResult)
+    ) {
+      return await this.onFormItemIssue(form, item, inspResult.diagnostic);
+    }
   }
 }
 
@@ -166,6 +227,18 @@ export class DerivedLhcFormInspectionDiags<
     return await this.onPreparedIssue(lchFormIssue<F>(target, diagnostic));
   }
 
+  async onFormInspection<IR>(
+    target: F,
+    inspResult: insp.InspectionResult<IR> | insp.InspectionResultSupplier<IR>,
+  ): Promise<LhcFormInspectionResult<F> | undefined> {
+    if (
+      insp.isInspectionIssue<IR>(inspResult) &&
+      insp.isDiagnosable<string>(inspResult)
+    ) {
+      return await this.onFormIssue(target, inspResult.diagnostic);
+    }
+  }
+
   async onFormItemIssue(
     form: F,
     item: lf.FormItem,
@@ -174,6 +247,19 @@ export class DerivedLhcFormInspectionDiags<
     return await this.onPreparedIssue(
       lchFormItemIssue<F>(form, item, diagnostic),
     );
+  }
+
+  async onFormItemInspection<IR>(
+    form: F,
+    item: lf.FormItem,
+    inspResult: insp.InspectionResult<IR> | insp.InspectionResultSupplier<IR>,
+  ): Promise<LhcFormInspectionResult<F> | undefined> {
+    if (
+      insp.isInspectionIssue<IR>(inspResult) &&
+      insp.isDiagnosable<string>(inspResult)
+    ) {
+      return await this.onFormItemIssue(form, item, inspResult.diagnostic);
+    }
   }
 }
 
