@@ -1,6 +1,20 @@
 import { inspect as insp } from "./deps.ts";
 import type * as lf from "./lform.ts";
 
+export interface LchFormInspector<F extends lf.NihLhcForm = lf.NihLhcForm>
+  extends
+    insp.Inspector<
+      F,
+      string,
+      Error,
+      LhcFormInspectionDiagnostics<F>
+    > {
+  (
+    target: F | LhcFormInspectionResult<F>,
+    diags?: LhcFormInspectionDiagnostics<F>,
+  ): Promise<F | LhcFormInspectionResult<F>>;
+}
+
 export function lhcFormInspectionPipe<F extends lf.NihLhcForm>(
   ...inspectors: insp.Inspector<
     F,
@@ -101,15 +115,15 @@ export interface LhcFormInspectionDiagnostics<
       | unknown,
   ) => Promise<LhcFormInspectionResult<F> | undefined>;
 
-  readonly onFormItemIssue: (
+  readonly onFormItemIssue: <I = lf.FormItem>(
     form: F,
-    item: lf.FormItem,
+    item: I,
     diagnostic: string,
   ) => Promise<LhcFormInspectionResult<F>>;
 
-  readonly onFormItemInspection: <IR>(
+  readonly onFormItemInspection: <IR, I = lf.FormItem>(
     form: F,
-    item: lf.FormItem,
+    item: I,
     inspResult:
       | insp.InspectionResult<IR>
       | insp.InspectionResultSupplier<IR>
@@ -146,19 +160,19 @@ export class TypicalLhcFormInspectionDiags<
     }
   }
 
-  async onFormItemIssue(
+  async onFormItemIssue<I = lf.FormItem>(
     form: F,
-    item: lf.FormItem,
+    item: I,
     diagnostic: string,
   ): Promise<LhcFormInspectionResult<F>> {
     return await this.onPreparedIssue(
-      lchFormItemIssue<F>(form, item, diagnostic),
+      lchFormItemIssue<F, I>(form, item, diagnostic),
     );
   }
 
-  async onFormItemInspection<IR>(
+  async onFormItemInspection<IR, I = lf.FormItem>(
     form: F,
-    item: lf.FormItem,
+    item: I,
     inspResult:
       | insp.InspectionResult<IR>
       | insp.InspectionResultSupplier<IR>
@@ -202,19 +216,19 @@ export class ConsoleLhcFormInspectionDiags<
     }
   }
 
-  async onFormItemIssue(
+  async onFormItemIssue<I = lf.FormItem>(
     form: F,
-    item: lf.FormItem,
+    item: I,
     diagnostic: string,
   ): Promise<LhcFormInspectionResult<F>> {
     return await this.onPreparedIssue(
-      lchFormItemIssue<F>(form, item, diagnostic),
+      lchFormItemIssue<F, I>(form, item, diagnostic),
     );
   }
 
-  async onFormItemInspection<IR>(
+  async onFormItemInspection<IR, I = lf.FormItem>(
     form: F,
-    item: lf.FormItem,
+    item: I,
     inspResult:
       | insp.InspectionResult<IR>
       | insp.InspectionResultSupplier<IR>
@@ -260,19 +274,19 @@ export class DerivedLhcFormInspectionDiags<
     }
   }
 
-  async onFormItemIssue(
+  async onFormItemIssue<I = lf.FormItem>(
     form: F,
-    item: lf.FormItem,
+    item: I,
     diagnostic: string,
   ): Promise<LhcFormInspectionResult<F>> {
     return await this.onPreparedIssue(
-      lchFormItemIssue<F>(form, item, diagnostic),
+      lchFormItemIssue<F, I>(form, item, diagnostic),
     );
   }
 
-  async onFormItemInspection<IR>(
+  async onFormItemInspection<IR, I = lf.FormItem>(
     form: F,
-    item: lf.FormItem,
+    item: I,
     inspResult:
       | insp.InspectionResult<IR>
       | insp.InspectionResultSupplier<IR>
@@ -285,18 +299,4 @@ export class DerivedLhcFormInspectionDiags<
       return await this.onFormItemIssue(form, item, inspResult.diagnostic);
     }
   }
-}
-
-export interface LchFormInspector<F extends lf.NihLhcForm = lf.NihLhcForm>
-  extends
-    insp.Inspector<
-      F,
-      string,
-      Error,
-      LhcFormInspectionDiagnostics<F>
-    > {
-  (
-    target: F | LhcFormInspectionResult<F>,
-    diags?: LhcFormInspectionDiagnostics<F>,
-  ): Promise<F | LhcFormInspectionResult<F>>;
 }
