@@ -136,7 +136,7 @@ export class ConsoleLhcFormInspectionDiags<
     target: F,
     diagnostic: string,
   ): Promise<LhcFormInspectionResult<F>> {
-    return await this.wrap.onPreparedIssue(lchFormIssue<F>(target, diagnostic));
+    return await this.onPreparedIssue(lchFormIssue<F>(target, diagnostic));
   }
 
   async onFormItemIssue(
@@ -144,7 +144,7 @@ export class ConsoleLhcFormInspectionDiags<
     item: lf.FormItem,
     diagnostic: string,
   ): Promise<LhcFormInspectionResult<F>> {
-    return await this.wrap.onPreparedIssue(
+    return await this.onPreparedIssue(
       lchFormItemIssue<F>(form, item, diagnostic),
     );
   }
@@ -163,10 +163,7 @@ export class DerivedLhcFormInspectionDiags<
     target: F,
     diagnostic: string,
   ): Promise<LhcFormInspectionResult<F>> {
-    const issue = lchFormIssue<F>(target, diagnostic);
-    const wrapped = insp.wrapInspectionIssue(issue, this.parent);
-    await this.parentDiags.onPreparedIssue(wrapped);
-    return issue;
+    return await this.onPreparedIssue(lchFormIssue<F>(target, diagnostic));
   }
 
   async onFormItemIssue(
@@ -174,10 +171,9 @@ export class DerivedLhcFormInspectionDiags<
     item: lf.FormItem,
     diagnostic: string,
   ): Promise<LhcFormInspectionResult<F>> {
-    const issue = lchFormItemIssue<F>(form, item, diagnostic);
-    const wrapped = insp.wrapInspectionIssue(issue, this.parent);
-    await this.parentDiags.onPreparedIssue(wrapped);
-    return issue;
+    return await this.onPreparedIssue(
+      lchFormItemIssue<F>(form, item, diagnostic),
+    );
   }
 }
 
