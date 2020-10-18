@@ -26,6 +26,8 @@ export function lhcFormInspectionPipe<F extends lf.NihLhcForm>(
   return insp.inspectionPipe(...inspectors);
 }
 
+export const lhcFormInspectionPipeContent = insp.inspectionPipeContext;
+
 // deno-lint-ignore no-empty-interface
 export interface LhcFormInspectionResult<
   F extends lf.NihLhcForm = lf.NihLhcForm,
