@@ -205,6 +205,34 @@ export class TypicalLhcFormInspectionDiags<
   }
 }
 
+export interface LchFormIssueDiagnosticMessage<
+  F extends lf.NihLhcForm = lf.NihLhcForm,
+> {
+  (
+    issue: insp.InspectionIssue<F> & insp.Diagnosable<string>,
+    diagnostic: string,
+  ): string;
+}
+
+export function defaultLhcFormIssueDiagnosticMessage<
+  F extends lf.NihLhcForm = lf.NihLhcForm,
+>(
+  issue: insp.InspectionIssue<F> & insp.Diagnosable<string>,
+  message: string,
+): string | undefined {
+  if (isLhcFormItemInspectionIssue<F>(issue)) {
+    const path = issue.ancestors
+      ? [
+        ...(issue.ancestors.map((i) => i.questionCode)),
+        issue.item.question,
+      ]
+      : [issue.item];
+    return `[${path.join("::")}] ${message}`;
+  } else {
+    return message;
+  }
+}
+
 export class ConsoleLhcFormInspectionDiags<
   F extends lf.NihLhcForm = lf.NihLhcForm,
 > extends insp.ConsoleInspectionDiagnostics<
@@ -212,6 +240,24 @@ export class ConsoleLhcFormInspectionDiags<
   string,
   Error
 > implements LhcFormInspectionDiagnostics<F> {
+  constructor(
+    readonly wrap: LhcFormInspectionDiagnostics<F>,
+    readonly verbose?: boolean,
+    readonly diagMessage = defaultLhcFormIssueDiagnosticMessage,
+  ) {
+    super(wrap, verbose);
+  }
+
+  async onIssue(
+    issue: insp.InspectionIssue<F>,
+  ): Promise<insp.InspectionIssue<F>> {
+    if (this.verbose && insp.isDiagnosable<string>(issue)) {
+      const mrd = issue.mostRecentDiagnostic();
+      if (mrd) console.error(this.diagMessage(issue, mrd));
+    }
+    return await this.wrap.onIssue(issue);
+  }
+
   async onFormIssue(
     target: F,
     diagnostic: string | string[],
