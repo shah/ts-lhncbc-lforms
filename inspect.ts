@@ -224,10 +224,10 @@ export function defaultLhcFormIssueDiagnosticMessage<
     const path = issue.ancestors
       ? [
         ...(issue.ancestors.map((i) => i.questionCode)),
-        issue.item.question,
+        issue.item.questionCode,
       ]
-      : [issue.item];
-    return `[${path.join("::")}] ${message}`;
+      : [issue.item.questionCode];
+    return `[${path.join("::")}] ${issue.item.question}: ${message}`;
   } else {
     return message;
   }
