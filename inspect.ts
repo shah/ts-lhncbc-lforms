@@ -66,6 +66,7 @@ export interface LhcFormItemInspectionIssue<
   I extends lf.FormItem = lf.FormItem,
 > extends LhcFormInspectionIssue<F> {
   item: I;
+  ancestors?: lf.FormItem[];
 }
 
 export function isLhcFormItemInspectionIssue<
@@ -84,10 +85,12 @@ export function lchFormItemIssue<
   form: F,
   item: I,
   diagnostic: string | string[],
+  ancestors?: lf.FormItem[],
 ): LhcFormItemInspectionIssue<F, I> & insp.Diagnosable<string> {
   return {
     ...lchFormIssue(form, diagnostic),
     item: item,
+    ancestors: ancestors,
   };
 }
 
@@ -172,9 +175,10 @@ export class TypicalLhcFormInspectionDiags<
     form: F,
     item: I,
     diagnostic: string | string[],
+    ancestors?: lf.FormItem[],
   ): Promise<LhcFormInspectionResult<F>> {
     return await this.onIssue(
-      lchFormItemIssue<F, I>(form, item, diagnostic),
+      lchFormItemIssue<F, I>(form, item, diagnostic, ancestors),
     );
   }
 
@@ -185,12 +189,18 @@ export class TypicalLhcFormInspectionDiags<
       | insp.InspectionResult<IR>
       | insp.InspectionResultSupplier<IR>
       | unknown,
+    ancestors?: lf.FormItem[],
   ): Promise<LhcFormInspectionResult<F> | undefined> {
     if (
       insp.isInspectionIssue<IR>(inspResult) &&
       insp.isDiagnosable<string>(inspResult)
     ) {
-      return await this.onFormItemIssue(form, item, inspResult.diagnostics);
+      return await this.onFormItemIssue(
+        form,
+        item,
+        inspResult.diagnostics,
+        ancestors,
+      );
     }
   }
 }
@@ -228,9 +238,10 @@ export class ConsoleLhcFormInspectionDiags<
     form: F,
     item: I,
     diagnostic: string | string[],
+    ancestors?: lf.FormItem[],
   ): Promise<LhcFormInspectionResult<F>> {
     return await this.onIssue(
-      lchFormItemIssue<F, I>(form, item, diagnostic),
+      lchFormItemIssue<F, I>(form, item, diagnostic, ancestors),
     );
   }
 
@@ -241,12 +252,18 @@ export class ConsoleLhcFormInspectionDiags<
       | insp.InspectionResult<IR>
       | insp.InspectionResultSupplier<IR>
       | unknown,
+    ancestors?: lf.FormItem[],
   ): Promise<LhcFormInspectionResult<F> | undefined> {
     if (
       insp.isInspectionIssue<IR>(inspResult) &&
       insp.isDiagnosable<string>(inspResult)
     ) {
-      return await this.onFormItemIssue(form, item, inspResult.diagnostics);
+      return await this.onFormItemIssue(
+        form,
+        item,
+        inspResult.diagnostics,
+        ancestors,
+      );
     }
   }
 }
@@ -286,9 +303,10 @@ export class DerivedLhcFormInspectionDiags<
     form: F,
     item: I,
     diagnostic: string | string[],
+    ancestors?: lf.FormItem[],
   ): Promise<LhcFormInspectionResult<F>> {
     return await this.onIssue(
-      lchFormItemIssue<F, I>(form, item, diagnostic),
+      lchFormItemIssue<F, I>(form, item, diagnostic, ancestors),
     );
   }
 
@@ -299,12 +317,18 @@ export class DerivedLhcFormInspectionDiags<
       | insp.InspectionResult<IR>
       | insp.InspectionResultSupplier<IR>
       | unknown,
+    ancestors?: lf.FormItem[],
   ): Promise<LhcFormInspectionResult<F> | undefined> {
     if (
       insp.isInspectionIssue<IR>(inspResult) &&
       insp.isDiagnosable<string>(inspResult)
     ) {
-      return await this.onFormItemIssue(form, item, inspResult.diagnostics);
+      return await this.onFormItemIssue(
+        form,
+        item,
+        inspResult.diagnostics,
+        ancestors,
+      );
     }
   }
 }
