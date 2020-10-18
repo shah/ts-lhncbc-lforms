@@ -54,14 +54,9 @@ export function isLhcFormInspectionIssue<
 
 export function lchFormIssue<F extends lf.NihLhcForm = lf.NihLhcForm>(
   form: F,
-  message: string,
+  diagnostic: string | string[],
 ): LhcFormInspectionIssue<F> & insp.Diagnosable<string> {
-  return {
-    isInspectionResult: true,
-    isInspectionIssue: true,
-    inspectionTarget: form,
-    diagnostic: message,
-  };
+  return insp.inspectionIssue(form, diagnostic);
 }
 
 export interface LhcFormItemInspectionIssue<
@@ -86,10 +81,10 @@ export function lchFormItemIssue<
 >(
   form: F,
   item: I,
-  message: string,
+  diagnostic: string | string[],
 ): LhcFormItemInspectionIssue<F, I> & insp.Diagnosable<string> {
   return {
-    ...lchFormIssue(form, message),
+    ...lchFormIssue(form, diagnostic),
     item: item,
   };
 }
@@ -140,9 +135,9 @@ export class TypicalLhcFormInspectionDiags<
 > implements LhcFormInspectionDiagnostics<F> {
   async onFormIssue(
     target: F,
-    diagnostic: string,
+    diagnostic: string | string[],
   ): Promise<LhcFormInspectionResult<F>> {
-    return await this.onPreparedIssue(lchFormIssue<F>(target, diagnostic));
+    return await this.onIssue(lchFormIssue<F>(target, diagnostic));
   }
 
   async onFormInspection<IR>(
@@ -156,16 +151,16 @@ export class TypicalLhcFormInspectionDiags<
       insp.isInspectionIssue<IR>(inspResult) &&
       insp.isDiagnosable<string>(inspResult)
     ) {
-      return await this.onFormIssue(target, inspResult.diagnostic);
+      return await this.onFormIssue(target, inspResult.diagnostics);
     }
   }
 
   async onFormItemIssue<I = lf.FormItem>(
     form: F,
     item: I,
-    diagnostic: string,
+    diagnostic: string | string[],
   ): Promise<LhcFormInspectionResult<F>> {
-    return await this.onPreparedIssue(
+    return await this.onIssue(
       lchFormItemIssue<F, I>(form, item, diagnostic),
     );
   }
@@ -182,7 +177,7 @@ export class TypicalLhcFormInspectionDiags<
       insp.isInspectionIssue<IR>(inspResult) &&
       insp.isDiagnosable<string>(inspResult)
     ) {
-      return await this.onFormItemIssue(form, item, inspResult.diagnostic);
+      return await this.onFormItemIssue(form, item, inspResult.diagnostics);
     }
   }
 }
@@ -196,9 +191,9 @@ export class ConsoleLhcFormInspectionDiags<
 > implements LhcFormInspectionDiagnostics<F> {
   async onFormIssue(
     target: F,
-    diagnostic: string,
+    diagnostic: string | string[],
   ): Promise<LhcFormInspectionResult<F>> {
-    return await this.onPreparedIssue(lchFormIssue<F>(target, diagnostic));
+    return await this.onIssue(lchFormIssue<F>(target, diagnostic));
   }
 
   async onFormInspection<IR>(
@@ -212,16 +207,16 @@ export class ConsoleLhcFormInspectionDiags<
       insp.isInspectionIssue<IR>(inspResult) &&
       insp.isDiagnosable<string>(inspResult)
     ) {
-      return await this.onFormIssue(target, inspResult.diagnostic);
+      return await this.onFormIssue(target, inspResult.diagnostics);
     }
   }
 
   async onFormItemIssue<I = lf.FormItem>(
     form: F,
     item: I,
-    diagnostic: string,
+    diagnostic: string | string[],
   ): Promise<LhcFormInspectionResult<F>> {
-    return await this.onPreparedIssue(
+    return await this.onIssue(
       lchFormItemIssue<F, I>(form, item, diagnostic),
     );
   }
@@ -238,7 +233,7 @@ export class ConsoleLhcFormInspectionDiags<
       insp.isInspectionIssue<IR>(inspResult) &&
       insp.isDiagnosable<string>(inspResult)
     ) {
-      return await this.onFormItemIssue(form, item, inspResult.diagnostic);
+      return await this.onFormItemIssue(form, item, inspResult.diagnostics);
     }
   }
 }
@@ -254,9 +249,9 @@ export class DerivedLhcFormInspectionDiags<
 > implements LhcFormInspectionDiagnostics<F> {
   async onFormIssue(
     target: F,
-    diagnostic: string,
+    diagnostic: string | string[],
   ): Promise<LhcFormInspectionResult<F>> {
-    return await this.onPreparedIssue(lchFormIssue<F>(target, diagnostic));
+    return await this.onIssue(lchFormIssue<F>(target, diagnostic));
   }
 
   async onFormInspection<IR>(
@@ -270,16 +265,16 @@ export class DerivedLhcFormInspectionDiags<
       insp.isInspectionIssue<IR>(inspResult) &&
       insp.isDiagnosable<string>(inspResult)
     ) {
-      return await this.onFormIssue(target, inspResult.diagnostic);
+      return await this.onFormIssue(target, inspResult.diagnostics);
     }
   }
 
   async onFormItemIssue<I = lf.FormItem>(
     form: F,
     item: I,
-    diagnostic: string,
+    diagnostic: string | string[],
   ): Promise<LhcFormInspectionResult<F>> {
-    return await this.onPreparedIssue(
+    return await this.onIssue(
       lchFormItemIssue<F, I>(form, item, diagnostic),
     );
   }
@@ -296,7 +291,7 @@ export class DerivedLhcFormInspectionDiags<
       insp.isInspectionIssue<IR>(inspResult) &&
       insp.isDiagnosable<string>(inspResult)
     ) {
-      return await this.onFormItemIssue(form, item, inspResult.diagnostic);
+      return await this.onFormItemIssue(form, item, inspResult.diagnostics);
     }
   }
 }
