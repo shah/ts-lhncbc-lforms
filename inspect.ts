@@ -245,7 +245,7 @@ export function defaultLchFormIssueDiagnosticPath<
         issue.item.questionCode,
       ]
       : [issue.item.questionCode];
-    return `${path.join("::")} ${issue.item.question}`;
+    return `${path.join("::")} ${truncate(issue.item.question, 20)}`;
   }
 }
 
