@@ -205,21 +205,25 @@ export class TypicalLhcFormInspectionDiags<
   }
 }
 
-export interface LchFormIssueDiagnosticMessage<
+export interface LchFormIssueDiagnosticPathSupplier<
+  F extends lf.NihLhcForm = lf.NihLhcForm,
+> {
+  (issue: insp.InspectionIssue<F>): string;
+}
+
+export interface LchFormIssueDiagnosticMessageSupplier<
   F extends lf.NihLhcForm = lf.NihLhcForm,
 > {
   (
     issue: insp.InspectionIssue<F> & insp.Diagnosable<string>,
     diagnostic: string,
+    pathSupplier?: LchFormIssueDiagnosticPathSupplier,
   ): string;
 }
 
-export function defaultLhcFormIssueDiagnosticMessage<
+export function defaultLchFormIssueDiagnosticPath<
   F extends lf.NihLhcForm = lf.NihLhcForm,
->(
-  issue: insp.InspectionIssue<F> & insp.Diagnosable<string>,
-  message: string,
-): string | undefined {
+>(issue: insp.InspectionIssue<F>): string | undefined {
   if (isLhcFormItemInspectionIssue<F>(issue)) {
     const path = issue.ancestors
       ? [
@@ -227,7 +231,22 @@ export function defaultLhcFormIssueDiagnosticMessage<
         issue.item.questionCode,
       ]
       : [issue.item.questionCode];
-    return `[${path.join("::")}] ${issue.item.question}: ${message}`;
+    return `${path.join("::")} ${issue.item.question}`;
+  }
+}
+
+export function defaultLhcFormIssueDiagnosticMessage<
+  F extends lf.NihLhcForm = lf.NihLhcForm,
+>(
+  issue: insp.InspectionIssue<F> & insp.Diagnosable<string>,
+  message: string,
+  pathSupplier?: LchFormIssueDiagnosticPathSupplier,
+): string | undefined {
+  if (isLhcFormItemInspectionIssue<F>(issue)) {
+    const path = pathSupplier
+      ? pathSupplier(issue)
+      : defaultLchFormIssueDiagnosticPath(issue);
+    return `[path] ${message}: ${issue.item.value}`;
   } else {
     return message;
   }
