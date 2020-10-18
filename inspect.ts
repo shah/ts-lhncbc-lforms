@@ -211,6 +211,20 @@ export interface LchFormIssueDiagnosticPathSupplier<
   (issue: insp.InspectionIssue<F>): string;
 }
 
+function truncate(content: unknown, n: number, useWordBoundary = true): string {
+  let str: string;
+  if (typeof content === "string") {
+    str = content;
+  } else {
+    str = JSON.stringify(content);
+  }
+  if (str.length <= n) return str;
+  const subString = str.substr(0, n - 1);
+  return (useWordBoundary
+    ? subString.substr(0, subString.lastIndexOf(" "))
+    : subString) + "...";
+}
+
 export interface LchFormIssueDiagnosticMessageSupplier<
   F extends lf.NihLhcForm = lf.NihLhcForm,
 > {
@@ -246,7 +260,7 @@ export function defaultLhcFormIssueDiagnosticMessage<
     const path = pathSupplier
       ? pathSupplier(issue)
       : defaultLchFormIssueDiagnosticPath(issue);
-    return `[path] ${message}: ${issue.item.value}`;
+    return `[${path}] ${message}: ${truncate(issue.item.value, 55)}`;
   } else {
     return message;
   }
