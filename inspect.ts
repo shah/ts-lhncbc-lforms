@@ -126,6 +126,10 @@ export interface LhcFormInspectionDiagnostics<
   ) => Promise<LhcFormInspectionResult<F> | undefined>;
 }
 
+// deno-lint-ignore no-empty-interface
+export interface LhcFormInspectionOptions {
+}
+
 export class TypicalLhcFormInspectionDiags<
   F extends lf.NihLhcForm = lf.NihLhcForm,
 > extends insp.InspectionDiagnosticsRecorder<
@@ -133,6 +137,13 @@ export class TypicalLhcFormInspectionDiags<
   string,
   Error
 > implements LhcFormInspectionDiagnostics<F> {
+  constructor(
+    context: insp.InspectionContext,
+    options?: LhcFormInspectionOptions,
+  ) {
+    super(context, options);
+  }
+
   async onFormIssue(
     target: F,
     diagnostic: string | string[],
