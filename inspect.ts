@@ -1,4 +1,4 @@
-import { inspect as insp } from "./deps.ts";
+import { colors, inspect as insp } from "./deps.ts";
 import type * as lf from "./lform.ts";
 
 export interface LchFormInspector<F extends lf.NihLhcForm = lf.NihLhcForm>
@@ -197,18 +197,23 @@ export interface LchFormIssueDiagnosticPathSupplier<
   (issue: insp.InspectionIssue<F>): string;
 }
 
-function truncate(content: unknown, n: number, useWordBoundary = true): string {
+export function truncate(
+  content: unknown,
+  maxChars: number,
+  suffix = "...",
+  useWordBoundary = true,
+): string {
   let str: string;
   if (typeof content === "string") {
     str = content;
   } else {
     str = JSON.stringify(content);
   }
-  if (str.length <= n) return str;
-  const subString = str.substr(0, n - 1);
+  if (str.length <= maxChars) return str;
+  const subString = str.substr(0, maxChars - 1);
   return (useWordBoundary
     ? subString.substr(0, subString.lastIndexOf(" "))
-    : subString) + "...";
+    : subString) + suffix;
 }
 
 export interface LchFormIssueDiagnosticMessageSupplier<
@@ -252,6 +257,41 @@ export function defaultLhcFormIssueDiagnosticMessage<
   }
 }
 
+export function coloredLchFormIssueDiagnosticPath<
+  F extends lf.NihLhcForm = lf.NihLhcForm,
+>(issue: insp.InspectionIssue<F>): string | undefined {
+  if (isLhcFormItemInspectionIssue<F>(issue)) {
+    const path = issue.ancestors
+      ? [
+        ...(issue.ancestors.map((i) => i.questionCode)),
+        issue.item.questionCode,
+      ]
+      : [issue.item.questionCode];
+    return `${colors.green(path.join("::"))} ${
+      colors.underline(truncate(issue.item.question, 20, colors.cyan("...")))
+    }`;
+  }
+}
+
+export function coloredLhcFormIssueDiagnosticMessage<
+  F extends lf.NihLhcForm = lf.NihLhcForm,
+>(
+  issue: insp.InspectionIssue<F> & insp.Diagnosable<string>,
+  message: string,
+  pathSupplier?: LchFormIssueDiagnosticPathSupplier,
+): string | undefined {
+  if (isLhcFormItemInspectionIssue<F>(issue)) {
+    const path = pathSupplier
+      ? pathSupplier(issue)
+      : coloredLchFormIssueDiagnosticPath(issue);
+    return `[${path}] ${colors.brightYellow(message)}: ${
+      truncate(issue.item.value, 55, colors.cyan("..."))
+    }`;
+  } else {
+    return message;
+  }
+}
+
 export class ConsoleLhcFormInspectionDiags<
   F extends lf.NihLhcForm = lf.NihLhcForm,
 > extends insp.ConsoleInspectionDiagnostics<
@@ -262,7 +302,7 @@ export class ConsoleLhcFormInspectionDiags<
   constructor(
     readonly wrap: LhcFormInspectionDiagnostics<F>,
     readonly verbose?: boolean,
-    readonly diagMessage = defaultLhcFormIssueDiagnosticMessage,
+    readonly diagMessage = coloredLhcFormIssueDiagnosticMessage,
   ) {
     super(wrap, verbose);
   }
