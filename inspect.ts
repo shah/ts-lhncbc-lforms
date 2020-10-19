@@ -5,9 +5,7 @@ export interface LchFormInspector<F extends lf.NihLhcForm = lf.NihLhcForm>
   extends
     insp.Inspector<
       F,
-      string,
-      Error,
-      LhcFormInspectionDiagnostics<F>
+      Error
     > {
   (
     target: F | LhcFormInspectionResult<F>,
@@ -18,11 +16,9 @@ export interface LchFormInspector<F extends lf.NihLhcForm = lf.NihLhcForm>
 export function lhcFormInspectionPipe<F extends lf.NihLhcForm>(
   ...inspectors: insp.Inspector<
     F,
-    string,
-    Error,
-    LhcFormInspectionDiagnostics<F>
+    Error
   >[]
-): insp.InspectionPipe<F, string, Error, LhcFormInspectionDiagnostics<F>> {
+): insp.InspectionPipe<F, Error> {
   return insp.inspectionPipe(...inspectors);
 }
 
@@ -35,11 +31,6 @@ export interface LhcFormInspectionResult<
 }
 
 export const isLhcFormInspectionResult = insp.isInspectionResult;
-
-// deno-lint-ignore no-empty-interface
-export interface LhcFormInspectionOptions extends insp.InspectionOptions {
-}
-
 export const isSuccessfulLhcFormInspection = insp.isSuccessfulInspection;
 
 // deno-lint-ignore no-empty-interface
@@ -99,7 +90,6 @@ export interface LhcFormInspectionDiagnostics<
 > extends
   insp.InspectionDiagnostics<
     F,
-    string,
     Error
   > {
   readonly onFormIssue: (
@@ -139,14 +129,10 @@ export class TypicalLhcFormInspectionDiags<
   F extends lf.NihLhcForm = lf.NihLhcForm,
 > extends insp.InspectionDiagnosticsRecorder<
   F,
-  string,
   Error
 > implements LhcFormInspectionDiagnostics<F> {
-  constructor(
-    context: insp.InspectionContext,
-    options?: LhcFormInspectionOptions,
-  ) {
-    super(context, options);
+  constructor(context: insp.InspectionContext) {
+    super(context);
   }
 
   async onFormIssue(
@@ -352,7 +338,6 @@ export class DerivedLhcFormInspectionDiags<
   W,
 > extends insp.WrappedInspectionDiagnostics<
   F,
-  string,
   Error,
   W
 > implements LhcFormInspectionDiagnostics<F> {

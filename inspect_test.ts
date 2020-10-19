@@ -5,7 +5,7 @@ import type { NihLhcForm } from "./lform.ts";
 
 export async function inspectForm(
   target: NihLhcForm | mod.LhcFormInspectionResult,
-  diags?: mod.LhcFormInspectionDiagnostics,
+  ctx?: insp.InspectionContext | mod.LhcFormInspectionDiagnostics,
 ): Promise<NihLhcForm | mod.LhcFormInspectionResult> {
   // TODO put in some rules here
   return target;
