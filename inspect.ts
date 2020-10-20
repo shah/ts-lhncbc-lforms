@@ -2,11 +2,7 @@ import { colors, inspect as insp } from "./deps.ts";
 import type * as lf from "./lform.ts";
 
 export interface LchFormInspector<F extends lf.NihLhcForm = lf.NihLhcForm>
-  extends
-    insp.Inspector<
-      F,
-      Error
-    > {
+  extends insp.Inspector<F> {
   (
     target: F | LhcFormInspectionResult<F>,
     diags?: LhcFormInspectionDiagnostics<F>,
@@ -14,11 +10,8 @@ export interface LchFormInspector<F extends lf.NihLhcForm = lf.NihLhcForm>
 }
 
 export function lhcFormInspectionPipe<F extends lf.NihLhcForm>(
-  ...inspectors: insp.Inspector<
-    F,
-    Error
-  >[]
-): insp.InspectionPipe<F, Error> {
+  ...inspectors: insp.Inspector<F>[]
+): insp.InspectionPipe<F> {
   return insp.inspectionPipe(...inspectors);
 }
 
