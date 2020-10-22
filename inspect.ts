@@ -261,7 +261,7 @@ export function coloredLchFormIssueDiagnosticPath<
       ]
       : [issue.item.questionCode];
     return `${colors.green(path.join("::"))} ${
-      colors.underline(truncate(issue.item.question, 20, colors.cyan("...")))
+      colors.brightWhite(truncate(issue.item.question, 20, colors.cyan("...")))
     }`;
   }
 }
@@ -277,9 +277,15 @@ export function coloredLhcFormIssueDiagnosticMessage<
     const path = pathSupplier
       ? pathSupplier(issue)
       : coloredLchFormIssueDiagnosticPath(issue);
+    let inspName: string | undefined = undefined;
+    if (insp.isInspectorProvenanceSupplier(issue)) {
+      inspName = ` ${
+        colors.gray("(" + issue.inspectorProvenance.inspectorIdentity + ")")
+      }`;
+    }
     return `[${path}] ${colors.brightYellow(message)}: ${
       truncate(issue.item.value, 55, colors.cyan("..."))
-    }`;
+    }${inspName}`;
   } else {
     return message;
   }
