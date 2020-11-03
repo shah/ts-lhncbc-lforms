@@ -121,12 +121,12 @@ export interface CurrencyItem extends FormItem {
 
 export type UniqueCurrencyItem = CurrencyItem & UniqueItem;
 
-export interface URLItem extends FormItem {
+export interface UrlItem extends FormItem {
   readonly dataType: "URL";
 }
 
-export function isURLItem(i: FormItem): i is URLItem {
+export function isUrlItem(i: FormItem): i is UrlItem {
   return i.dataType == "URL";
 }
 
-export type UniqueURLItem = URLItem & UniqueItem;
+export type UniqueUrlItem = UrlItem & UniqueItem;
