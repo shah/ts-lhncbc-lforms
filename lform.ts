@@ -23,7 +23,7 @@ export interface NihLhcForm {
   publisher?: string;
   description?: string;
   deriveFrom?: string[];
-  subjectType?: string[];
+  subjectType?: string[] | SubjectTypeOptions;
   experimental?: boolean;
   purpose?: string;
   copyright?: string;
@@ -35,6 +35,13 @@ export interface NihLhcForm {
   template?: string;
   identifier?: string | null;
   hasSavedData?: boolean;
+}
+
+export interface SubjectTypeOptions {
+  extraClass: string;
+  imagePath: string;
+  referenceLink: string;
+  toolTipText: string;
 }
 
 export enum FormDataType {
@@ -90,7 +97,7 @@ export interface FormItem {
   layout?: string;
   dataControl?: DataControl[];
   value?: ValueElement[] | ValueElement;
-  prefix?: string;
+  prefix?: string | PrefixOptions;
   extensions?: Record<string, unknown>;
   hideUnits?: boolean;
   noEmptyValue?: boolean;
@@ -102,6 +109,26 @@ export interface FormItem {
   numberField?: boolean;
   externallyDefined?: string;
   FILEUPLOAD?: boolean;
+}
+
+export interface PrefixOptions {
+  category?: string;
+  iconClass?: string;
+  valueFormat?: string;
+  iconCss?: string;
+  tooltip?: string;
+  anchorTagClass?: string;
+  countDivId?: string;
+  countSpanId?: string;
+  globalStatusVar?: string;
+  metricKeyId?: string;
+  metricKeyName?: string;
+  outerDivClass?: string;
+  spanId?: string;
+  type?: string;
+  itemClass?: string;
+  countDivClass?: string;
+  innerDivClass?: string;
 }
 
 export interface Cardinality {
