@@ -132,8 +132,8 @@ export interface PrefixOptions {
 }
 
 export interface Cardinality {
-  min: number;
-  max: number | "*";
+  min: number | string;
+  max: number | "*" | string;
 }
 
 export interface ItemAnswer {
