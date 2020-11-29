@@ -13,9 +13,7 @@ function testFilePath(relTestFileName: string): string {
 }
 
 Deno.test(`mutate LHC Form values (for data migrations)`, () => {
-  const removeFour: mod.LhcFormJsonPatchMutationsSupplier = (
-    ctx: mod.LhcFormMutationsSupplierContext,
-  ) => {
+  const removeFour: mod.LhcFormJsonPatchMutationsSupplier = (ctx) => {
     if (mod.isLhcFormItemMutationsSupplierContext(ctx)) {
       ctx.itemJPMS.removeValues(
         `codingInstructions`,
@@ -25,24 +23,22 @@ Deno.test(`mutate LHC Form values (for data migrations)`, () => {
       );
     }
   };
-  const quesCodeRegistry: Record<
-    string,
-    | mod.LhcFormJsonPatchMutationsSupplier
-    | mod.LhcFormJsonPatchMutationsSupplier[]
-  > = {
-    "002-01-01": removeFour,
-    "002-01-02": removeFour,
-    "Q002-02-11": (ctx) => {
-      if (mod.isLhcFormItemMutationsSupplierContext(ctx)) {
-        ctx.itemJPMS.removeValues(`dataType`, `hideUnits`);
-      }
-    },
-    [mod.questionCodesHierarchy("002-02-00", "002-02-01")]: (ctx) => {
-      if (mod.isLhcFormSubItemMutationsSupplierContext(ctx)) {
-        ctx.itemJPMS.removeValue(`codingInstructions`);
-      }
-    },
-  };
+  const quesCodesRegistry: mod.QuestionCodeMutationsSuppliers = new Map(
+    Object.entries({
+      "002-01-01": removeFour,
+      "002-01-02": removeFour,
+      "Q002-02-11": (ctx) => {
+        if (mod.isLhcFormItemMutationsSupplierContext(ctx)) {
+          ctx.itemJPMS.removeValues(`dataType`, `hideUnits`);
+        }
+      },
+      [mod.questionCodesHierarchy("002-02-00", "002-02-01")]: (ctx) => {
+        if (mod.isLhcFormSubItemMutationsSupplierContext(ctx)) {
+          ctx.itemJPMS.removeValue(`codingInstructions`);
+        }
+      },
+    }),
+  );
 
   const lfmp = mod.lhcFormQuestionCodeMutationsSupplier((ctx) => {
     ctx.formJPMS.removeValues(...[
@@ -51,7 +47,7 @@ Deno.test(`mutate LHC Form values (for data migrations)`, () => {
       "/template",
       "/type",
     ]);
-  }, quesCodeRegistry);
+  }, quesCodesRegistry);
 
   const result = mod.migrateLhcFormFile(
     testFilePath("test5-institution-profile.lhc-form.json"),

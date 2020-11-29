@@ -70,6 +70,17 @@ export interface LhcFormJsonPatchMutationsSupplier<
   (ctx: LhcFormMutationsSupplierContext<F>): void;
 }
 
+// deno-lint-ignore no-empty-interface
+export interface QuestionCodeMutationsSuppliers<
+  F extends NihLhcForm = NihLhcForm,
+> extends
+  Map<
+    string,
+    | LhcFormJsonPatchMutationsSupplier<F>
+    | LhcFormJsonPatchMutationsSupplier<F>[]
+  > {
+}
+
 /**
  * lhcFormQuestionCodeMutationsSupplier createa a LhcFormJsonPatchMutationsSupplier 
  * which loops through each top-level form item and sub-items and checks to see if
@@ -82,11 +93,7 @@ export function lhcFormQuestionCodeMutationsSupplier<
   F extends NihLhcForm = NihLhcForm,
 >(
   prepareForm: LhcFormJsonPatchMutationsSupplier<F>,
-  quesCodeMutRegistry: Record<
-    string,
-    | LhcFormJsonPatchMutationsSupplier<F>
-    | LhcFormJsonPatchMutationsSupplier<F>[]
-  >,
+  quesCodeMutRegistry: QuestionCodeMutationsSuppliers,
 ): LhcFormJsonPatchMutationsSupplier<F> {
   return (formCtx: LhcFormMutationsSupplierContext<F>): void => {
     prepareForm(formCtx);
@@ -101,7 +108,7 @@ export function lhcFormQuestionCodeMutationsSupplier<
             itemIndexInParent: tlIdx,
             itemJPMS: lhcFormTopLevelItemMutationsSupplier(formJPMS, tlIdx),
           };
-          const tlmSupplier = quesCodeMutRegistry[tlItem.questionCode];
+          const tlmSupplier = quesCodeMutRegistry.get(tlItem.questionCode);
           if (tlmSupplier) {
             if (Array.isArray(tlmSupplier)) {
               tlmSupplier.forEach((s) => s(tlCtx));
@@ -112,12 +119,12 @@ export function lhcFormQuestionCodeMutationsSupplier<
           if (tlItem.items) {
             for (let subIdx = 0; subIdx < tlItem.items.length; subIdx++) {
               const siItem = tlItem.items[subIdx];
-              const simSupplier = quesCodeMutRegistry[
+              const simSupplier = quesCodeMutRegistry.get(
                 questionCodesHierarchy(
                   tlItem.questionCode,
                   siItem.questionCode || "*",
-                )
-              ];
+                ),
+              );
               if (simSupplier) {
                 const siCtx: LhcFormSubItemMutationsSupplierContext<F> = {
                   ...formCtx,
