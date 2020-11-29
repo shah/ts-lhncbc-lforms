@@ -61,6 +61,23 @@ export interface LhcFormSubItemMutationsPreparer<
   ): void;
 }
 
+export function lchFormTopLevelItemMutationsQuesCodeRegistry<F>(
+  registry: Record<
+    string,
+    LhcFormTopLevelItemMutationsPreparer<F>
+  >,
+): LhcFormTopLevelItemMutationsPreparer<F> {
+  return (item, itemJPMS, index, form, formJPMS) => {
+    if (item.questionCode) {
+      const preparer = registry[item.questionCode];
+      if (preparer) {
+        return preparer(item, itemJPMS, index, form, formJPMS);
+      }
+    }
+    return undefined;
+  };
+}
+
 export function lhcFormMutationsPreparer<F extends NihLhcForm>(
   prepareForm: (form: F, formJPMS: jm.JsonPatchMutationsSupplier) => void,
   prepareItem: LhcFormTopLevelItemMutationsPreparer<F>,
