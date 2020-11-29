@@ -2,6 +2,11 @@ import { jsonMutator as jm } from "./deps.ts";
 import { FormItem, NihLhcForm } from "./lform.ts";
 import { readLhcFormFileSync } from "./persist.ts";
 
+export function questionCodesHierarchy(...items: FormItem[]): string {
+  const questionCodes = items.map((fi) => fi.questionCode);
+  return questionCodes.join("::");
+}
+
 export function lhcFormTopLevelItemMutationsSupplier(
   jpms: jm.JsonPatchMutationsSupplier,
   itemIndex: number,
@@ -62,7 +67,7 @@ export interface LhcFormSubItemMutationsPreparer<
   ): void;
 }
 
-export function lhcFormTopLevelItemMutationsQuesCodeRegistry<F>(
+export function lhcFormTopLevelQuesCodeMutationsRegistry<F>(
   registry: Record<
     string,
     | LhcFormTopLevelItemMutationsPreparer<F>
@@ -85,6 +90,73 @@ export function lhcFormTopLevelItemMutationsQuesCodeRegistry<F>(
       }
     }
     return undefined;
+  };
+}
+
+export function lhcFormQuestionCodeMutationsPreparer<
+  F extends NihLhcForm = NihLhcForm,
+>(
+  prepareForm: (form: F, formJPMS: jm.JsonPatchMutationsSupplier) => void,
+  registry: Record<
+    string,
+    | ((
+      item: FormItem,
+      jpms: jm.JsonPatchMutationsSupplier,
+      parent?: FormItem,
+      parentJPMS?: jm.JsonPatchMutationsSupplier,
+    ) => void)
+    | ((
+      item: FormItem,
+      jpms: jm.JsonPatchMutationsSupplier,
+      parent?: FormItem,
+      parentJPMS?: jm.JsonPatchMutationsSupplier,
+    ) => void)[]
+  >,
+): LhcFormMutationsPreparer<F> {
+  return (
+    form: F,
+    formJPMS: jm.JsonPatchMutationsSupplier,
+  ): jm.JsonPatchMutationsSupplier => {
+    prepareForm(form, formJPMS);
+    if (form.items) {
+      for (let tlIdx = 0; tlIdx < form.items.length; tlIdx++) {
+        const tlItem = form.items[tlIdx];
+        const tlJPMS = lhcFormTopLevelItemMutationsSupplier(formJPMS, tlIdx);
+        if (tlItem.questionCode) {
+          const tlPreparer = registry[tlItem.questionCode];
+          if (tlPreparer) {
+            if (Array.isArray(tlPreparer)) {
+              for (const p of tlPreparer) {
+                p(tlItem, tlJPMS);
+              }
+            } else {
+              tlPreparer(tlItem, tlJPMS);
+            }
+          }
+          if (tlItem.items) {
+            for (let subI = 0; subI < tlItem.items.length; subI++) {
+              const si = tlItem.items[subI];
+              const siJPMS = lhcFormSubItemMutationsSupplier(
+                formJPMS,
+                tlIdx,
+                subI,
+              );
+              const siPreparer = registry[questionCodesHierarchy(tlItem, si)];
+              if (siPreparer) {
+                if (Array.isArray(siPreparer)) {
+                  for (const p of siPreparer) {
+                    p(si, siJPMS, tlItem, tlJPMS);
+                  }
+                } else {
+                  siPreparer(si, siJPMS, tlItem, tlJPMS);
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    return formJPMS;
   };
 }
 

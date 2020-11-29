@@ -53,7 +53,7 @@ Deno.test(`mutate LHC Form values (for data migrations)`, () => {
         "/type",
       ]);
     },
-    mod.lhcFormTopLevelItemMutationsQuesCodeRegistry(quesCodeRegistry),
+    mod.lhcFormTopLevelQuesCodeMutationsRegistry(quesCodeRegistry),
   );
 
   const result = mod.migrateLhcFormFile(
