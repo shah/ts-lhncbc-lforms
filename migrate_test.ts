@@ -52,16 +52,17 @@ Deno.test(`mutate LHC Form values (for data migrations)`, () => {
         "/type",
       ]);
     },
-    mod.lchFormTopLevelItemMutationsQuesCodeRegistry(qcRegistry),
+    mod.lhcFormTopLevelItemMutationsQuesCodeRegistry(qcRegistry),
   );
 
-  const testFormSrc = JSON.parse(
-    Deno.readTextFileSync(
-      testFilePath("test5-institution-profile.lhc-form.json"),
-    ),
-  ) as NihLhcForm;
-  const formJPMS = lfmp(testFormSrc, jm.jsonPatchMutationsSupplier());
-  const patchOps = formJPMS.patchOps();
-  ta.assert(patchOps);
-  ta.assertEquals(patchOps.length, 14);
+  const result = mod.migrateLhcFormFile(
+    testFilePath("test5-institution-profile.lhc-form.json"),
+    lfmp,
+  );
+  ta.assert(jm.isJsonPatchMutationResult(result));
+  ta.assert(result.mutated);
+
+  // we created 14 patch operations but only 6 are valid so those are kept;
+  // the others probaby weren't found in the source so they were filtered
+  ta.assertEquals(result.patchOps.length, 6);
 });

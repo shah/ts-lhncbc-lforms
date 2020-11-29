@@ -1,7 +1,8 @@
 import { jsonMutator as jm } from "./deps.ts";
 import { FormItem, NihLhcForm } from "./lform.ts";
+import { readLhcFormFileSync } from "./persist.ts";
 
-export function lchFormTopLevelItemMutationsSupplier(
+export function lhcFormTopLevelItemMutationsSupplier(
   jpms: jm.JsonPatchMutationsSupplier,
   itemIndex: number,
 ): jm.JsonPatchMutationsSupplier {
@@ -13,7 +14,7 @@ export function lchFormTopLevelItemMutationsSupplier(
   );
 }
 
-export function lchFormSubItemMutationsSupplier(
+export function lhcFormSubItemMutationsSupplier(
   jpms: jm.JsonPatchMutationsSupplier,
   tlItemIndex: number,
   subItemIndex: number,
@@ -61,7 +62,7 @@ export interface LhcFormSubItemMutationsPreparer<
   ): void;
 }
 
-export function lchFormTopLevelItemMutationsQuesCodeRegistry<F>(
+export function lhcFormTopLevelItemMutationsQuesCodeRegistry<F>(
   registry: Record<
     string,
     LhcFormTopLevelItemMutationsPreparer<F>
@@ -90,7 +91,7 @@ export function lhcFormMutationsPreparer<F extends NihLhcForm>(
     if (form.items) {
       for (let tlIdx = 0; tlIdx < form.items.length; tlIdx++) {
         const tlItem = form.items[tlIdx];
-        const tlJPMS = lchFormTopLevelItemMutationsSupplier(formJPMS, tlIdx);
+        const tlJPMS = lhcFormTopLevelItemMutationsSupplier(formJPMS, tlIdx);
         const prepareSubItem = prepareItem(
           tlItem,
           tlJPMS,
@@ -101,7 +102,7 @@ export function lhcFormMutationsPreparer<F extends NihLhcForm>(
         if (prepareSubItem && tlItem.items) {
           for (let subI = 0; subI < tlItem.items.length; subI++) {
             const si = tlItem.items[subI];
-            const siJPMS = lchFormSubItemMutationsSupplier(
+            const siJPMS = lhcFormSubItemMutationsSupplier(
               formJPMS,
               tlIdx,
               subI,
@@ -113,4 +114,22 @@ export function lhcFormMutationsPreparer<F extends NihLhcForm>(
     }
     return formJPMS;
   };
+}
+
+export function migrateLhcForm<F extends NihLhcForm>(
+  src: F,
+  mp: LhcFormMutationsPreparer<F>,
+): jm.JsonMutationError | jm.JsonMutationResult<F> {
+  const jpms = mp(src, jm.jsonPatchMutationsSupplier());
+  const patchOps = jm.filterInvalidOps(jpms.patchOps(), src);
+  const mutator = jm.jsonPatchMutator(src, patchOps);
+  return mutator();
+}
+
+export function migrateLhcFormFile<F extends NihLhcForm>(
+  src: string | URL,
+  mp: LhcFormMutationsPreparer<F>,
+): jm.JsonMutationError | jm.JsonMutationResult<F> {
+  const lhcForm = readLhcFormFileSync(src) as F;
+  return migrateLhcForm(lhcForm, mp);
 }
