@@ -2,8 +2,7 @@ import { jsonMutator as jm } from "./deps.ts";
 import { FormItem, NihLhcForm } from "./lform.ts";
 import { readLhcFormFileSync } from "./persist.ts";
 
-export function questionCodesHierarchy(...items: FormItem[]): string {
-  const questionCodes = items.map((fi) => fi.questionCode);
+export function questionCodesHierarchy(...questionCodes: string[]): string {
   return questionCodes.join("::");
 }
 
@@ -32,123 +31,111 @@ export function lhcFormSubItemMutationsSupplier(
   );
 }
 
-export interface LhcFormMutationsPreparer<F extends NihLhcForm = NihLhcForm> {
-  (
-    form: F,
-    formJPMS: jm.JsonPatchMutationsSupplier,
-  ): jm.JsonPatchMutationsSupplier;
-}
-
-export interface LhcFormTopLevelItemMutationsPreparer<
+export interface LhcFormMutationsSupplierContext<
   F extends NihLhcForm = NihLhcForm,
-  I extends FormItem = FormItem,
 > {
-  (
-    item: I,
-    itemJPMS: jm.JsonPatchMutationsSupplier,
-    index: number,
-    form: F,
-    formJPMS: jm.JsonPatchMutationsSupplier,
-  ): LhcFormSubItemMutationsPreparer<F, I> | undefined;
+  readonly form: F;
+  readonly formJPMS: jm.JsonPatchMutationsSupplier;
 }
 
-export interface LhcFormSubItemMutationsPreparer<
+export interface LhcFormItemMutationsSupplierContext<
   F extends NihLhcForm = NihLhcForm,
-  I extends FormItem = FormItem,
+> extends LhcFormMutationsSupplierContext<F> {
+  readonly item: FormItem;
+  readonly itemJPMS: jm.JsonPatchMutationsSupplier;
+  readonly itemIndexInParent: number;
+}
+
+export interface LhcFormSubItemMutationsSupplierContext<
+  F extends NihLhcForm = NihLhcForm,
+> extends LhcFormItemMutationsSupplierContext<F> {
+  readonly parentItem: LhcFormItemMutationsSupplierContext<F>;
+}
+
+export function isLhcFormItemMutationsSupplierContext<F extends NihLhcForm>(
+  o: LhcFormMutationsSupplierContext<F>,
+): o is LhcFormItemMutationsSupplierContext<F> {
+  return ("item" in o) && ("itemJPMS" in o);
+}
+
+export function isLhcFormSubItemMutationsSupplierContext<F extends NihLhcForm>(
+  o: LhcFormMutationsSupplierContext<F>,
+): o is LhcFormSubItemMutationsSupplierContext<F> {
+  return isLhcFormItemMutationsSupplierContext(o) && ("parentItem" in o);
+}
+
+export interface LhcFormJsonPatchMutationsSupplier<
+  F extends NihLhcForm = NihLhcForm,
 > {
-  (
-    item: I,
-    itemJPMS: jm.JsonPatchMutationsSupplier,
-    index: number,
-    parent: FormItem,
-    parentJPMS: jm.JsonPatchMutationsSupplier,
-    form: F,
-    formJMS: jm.JsonPatchMutationsSupplier,
-  ): void;
+  (ctx: LhcFormMutationsSupplierContext<F>): void;
 }
 
-export function lhcFormTopLevelQuesCodeMutationsRegistry<F>(
-  registry: Record<
-    string,
-    | LhcFormTopLevelItemMutationsPreparer<F>
-    | LhcFormTopLevelItemMutationsPreparer<F>[]
-  >,
-): LhcFormTopLevelItemMutationsPreparer<F> {
-  return (item, itemJPMS, index, form, formJPMS) => {
-    if (item.questionCode) {
-      const preparer = registry[item.questionCode];
-      if (preparer) {
-        if (Array.isArray(preparer)) {
-          let result;
-          for (const p of preparer) {
-            result = p(item, itemJPMS, index, form, formJPMS);
-          }
-          return result;
-        } else {
-          return preparer(item, itemJPMS, index, form, formJPMS);
-        }
-      }
-    }
-    return undefined;
-  };
-}
-
-export function lhcFormQuestionCodeMutationsPreparer<
+/**
+ * lhcFormQuestionCodeMutationsSupplier createa a LhcFormJsonPatchMutationsSupplier 
+ * which loops through each top-level form item and sub-items and checks to see if
+ * a question code ("QC") key is mapped to a LhcFormJsonPatchMutationsSupplier. If a
+ * QC is mapped, it runs the method.
+ * @param prepareForm method called for the form mutations
+ * @param quesCodeMutRegistry dictionary of QCs mapped to mutation suppliers
+ */
+export function lhcFormQuestionCodeMutationsSupplier<
   F extends NihLhcForm = NihLhcForm,
 >(
-  prepareForm: (form: F, formJPMS: jm.JsonPatchMutationsSupplier) => void,
-  registry: Record<
+  prepareForm: LhcFormJsonPatchMutationsSupplier<F>,
+  quesCodeMutRegistry: Record<
     string,
-    | ((
-      item: FormItem,
-      jpms: jm.JsonPatchMutationsSupplier,
-      parent?: FormItem,
-      parentJPMS?: jm.JsonPatchMutationsSupplier,
-    ) => void)
-    | ((
-      item: FormItem,
-      jpms: jm.JsonPatchMutationsSupplier,
-      parent?: FormItem,
-      parentJPMS?: jm.JsonPatchMutationsSupplier,
-    ) => void)[]
+    | LhcFormJsonPatchMutationsSupplier<F>
+    | LhcFormJsonPatchMutationsSupplier<F>[]
   >,
-): LhcFormMutationsPreparer<F> {
-  return (
-    form: F,
-    formJPMS: jm.JsonPatchMutationsSupplier,
-  ): jm.JsonPatchMutationsSupplier => {
-    prepareForm(form, formJPMS);
+): LhcFormJsonPatchMutationsSupplier<F> {
+  return (formCtx: LhcFormMutationsSupplierContext<F>): void => {
+    prepareForm(formCtx);
+    const { form, formJPMS } = formCtx;
     if (form.items) {
       for (let tlIdx = 0; tlIdx < form.items.length; tlIdx++) {
         const tlItem = form.items[tlIdx];
-        const tlJPMS = lhcFormTopLevelItemMutationsSupplier(formJPMS, tlIdx);
         if (tlItem.questionCode) {
-          const tlPreparer = registry[tlItem.questionCode];
-          if (tlPreparer) {
-            if (Array.isArray(tlPreparer)) {
-              for (const p of tlPreparer) {
-                p(tlItem, tlJPMS);
-              }
+          const tlCtx: LhcFormItemMutationsSupplierContext<F> = {
+            ...formCtx,
+            item: tlItem,
+            itemIndexInParent: tlIdx,
+            itemJPMS: lhcFormTopLevelItemMutationsSupplier(formJPMS, tlIdx),
+          };
+          const tlmSupplier = quesCodeMutRegistry[tlItem.questionCode];
+          if (tlmSupplier) {
+            if (Array.isArray(tlmSupplier)) {
+              tlmSupplier.forEach((s) => s(tlCtx));
             } else {
-              tlPreparer(tlItem, tlJPMS);
+              tlmSupplier(tlCtx);
             }
           }
           if (tlItem.items) {
-            for (let subI = 0; subI < tlItem.items.length; subI++) {
-              const si = tlItem.items[subI];
-              const siJPMS = lhcFormSubItemMutationsSupplier(
-                formJPMS,
-                tlIdx,
-                subI,
-              );
-              const siPreparer = registry[questionCodesHierarchy(tlItem, si)];
-              if (siPreparer) {
-                if (Array.isArray(siPreparer)) {
-                  for (const p of siPreparer) {
-                    p(si, siJPMS, tlItem, tlJPMS);
+            for (let subIdx = 0; subIdx < tlItem.items.length; subIdx++) {
+              const siItem = tlItem.items[subIdx];
+              const simSupplier = quesCodeMutRegistry[
+                questionCodesHierarchy(
+                  tlItem.questionCode,
+                  siItem.questionCode || "*",
+                )
+              ];
+              if (simSupplier) {
+                const siCtx: LhcFormSubItemMutationsSupplierContext<F> = {
+                  ...formCtx,
+                  item: siItem,
+                  itemIndexInParent: subIdx,
+                  itemJPMS: lhcFormSubItemMutationsSupplier(
+                    formJPMS,
+                    tlIdx,
+                    subIdx,
+                  ),
+                  parentItem: tlCtx,
+                };
+                if (Array.isArray(simSupplier)) {
+                  for (const p of simSupplier) {
+                    simSupplier.forEach((s) => s(siCtx));
                   }
                 } else {
-                  siPreparer(si, siJPMS, tlItem, tlJPMS);
+                  simSupplier(siCtx);
                 }
               }
             }
@@ -156,60 +143,70 @@ export function lhcFormQuestionCodeMutationsPreparer<
         }
       }
     }
-    return formJPMS;
   };
 }
 
-export function lhcFormMutationsPreparer<F extends NihLhcForm = NihLhcForm>(
-  prepareForm: (form: F, formJPMS: jm.JsonPatchMutationsSupplier) => void,
-  prepareItem: LhcFormTopLevelItemMutationsPreparer<F>,
-): LhcFormMutationsPreparer<F> {
-  return (
-    form: F,
-    formJPMS: jm.JsonPatchMutationsSupplier,
-  ): jm.JsonPatchMutationsSupplier => {
-    prepareForm(form, formJPMS);
+/**
+ * lhcFormMutationsSupplier createa a LhcFormJsonPatchMutationsSupplier which
+ * loops through each top-level form item and sub-items and calls the wrapped
+ * `supplier` argument.
+ * @param supplier method called for the form, top-level items, and sub-items
+ */
+export function lhcFormMutationsSupplier<F extends NihLhcForm = NihLhcForm>(
+  supplier: LhcFormJsonPatchMutationsSupplier<F>,
+): LhcFormJsonPatchMutationsSupplier<F> {
+  return (formCtx: LhcFormMutationsSupplierContext<F>): void => {
+    supplier(formCtx);
+    const { form, formJPMS } = formCtx;
     if (form.items) {
       for (let tlIdx = 0; tlIdx < form.items.length; tlIdx++) {
         const tlItem = form.items[tlIdx];
-        const tlJPMS = lhcFormTopLevelItemMutationsSupplier(formJPMS, tlIdx);
-        const prepareSubItem = prepareItem(
-          tlItem,
-          tlJPMS,
-          tlIdx,
-          form,
-          formJPMS,
-        );
-        if (prepareSubItem && tlItem.items) {
-          for (let subI = 0; subI < tlItem.items.length; subI++) {
-            const si = tlItem.items[subI];
-            const siJPMS = lhcFormSubItemMutationsSupplier(
-              formJPMS,
-              tlIdx,
-              subI,
-            );
-            prepareSubItem(si, siJPMS, subI, tlItem, tlJPMS, form, formJPMS);
+        const tlCtx: LhcFormItemMutationsSupplierContext<F> = {
+          ...formCtx,
+          item: tlItem,
+          itemIndexInParent: tlIdx,
+          itemJPMS: lhcFormTopLevelItemMutationsSupplier(formJPMS, tlIdx),
+        };
+        supplier(tlCtx);
+        if (tlItem.items) {
+          for (let subIdx = 0; subIdx < tlItem.items.length; subIdx++) {
+            const siItem = tlItem.items[subIdx];
+            const siCtx: LhcFormSubItemMutationsSupplierContext<F> = {
+              ...formCtx,
+              item: siItem,
+              itemIndexInParent: subIdx,
+              itemJPMS: lhcFormSubItemMutationsSupplier(
+                formJPMS,
+                tlIdx,
+                subIdx,
+              ),
+              parentItem: tlCtx,
+            };
+            supplier(siCtx);
           }
         }
       }
     }
-    return formJPMS;
   };
 }
 
 export function migrateLhcForm<F extends NihLhcForm = NihLhcForm>(
   src: F,
-  mp: LhcFormMutationsPreparer<F>,
+  formMutSupplier: LhcFormJsonPatchMutationsSupplier<F>,
 ): jm.JsonMutationError | jm.JsonMutationResult<F> {
-  const jpms = mp(src, jm.jsonPatchMutationsSupplier());
-  const patchOps = jm.filterInvalidOps(jpms.patchOps(), src);
+  const formJpmsCtx = {
+    form: src,
+    formJPMS: jm.jsonPatchMutationsSupplier(),
+  };
+  formMutSupplier(formJpmsCtx);
+  const patchOps = jm.filterInvalidOps(formJpmsCtx.formJPMS.patchOps(), src);
   const mutator = jm.jsonPatchMutator(src, patchOps);
   return mutator();
 }
 
 export function migrateLhcFormFile<F extends NihLhcForm = NihLhcForm>(
   src: string | URL,
-  mp: LhcFormMutationsPreparer<F>,
+  mp: LhcFormJsonPatchMutationsSupplier<F>,
 ): jm.JsonMutationError | jm.JsonMutationResult<F> {
   const lhcForm = readLhcFormFileSync(src) as F;
   return migrateLhcForm(lhcForm, mp);
