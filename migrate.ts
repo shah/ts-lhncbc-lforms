@@ -262,3 +262,23 @@ export function migrateLhcFormFile<F extends NihLhcForm = NihLhcForm>(
   const lhcForm = readLhcFormFileSync(src) as F;
   return migrateLhcForm(lhcForm, mp);
 }
+
+export interface CompareLhcFormFilesResult<F extends NihLhcForm = NihLhcForm> {
+  readonly srcForm: F;
+  readonly compareForm: F;
+  readonly patchOps: jm.JsonPatchOps;
+}
+
+export function compareLhcFormFiles<F extends NihLhcForm = NihLhcForm>(
+  srcFile: string | URL,
+  compareFile: string | URL,
+  invertible?: boolean,
+): CompareLhcFormFilesResult<F> {
+  const srcForm = readLhcFormFileSync(srcFile) as F;
+  const compareForm = readLhcFormFileSync(compareFile) as F;
+  return {
+    srcForm,
+    compareForm,
+    patchOps: jp.compare(srcForm, compareForm, invertible),
+  };
+}
