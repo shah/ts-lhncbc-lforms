@@ -1,4 +1,4 @@
-import { jsonMutator as jm } from "./deps.ts";
+import { jsonMutator as jm, jsonPatch as jp } from "./deps.ts";
 import { FormItem, NihLhcForm } from "./lform.ts";
 import { readLhcFormFileSync } from "./persist.ts";
 
@@ -212,23 +212,53 @@ export function typicalLhcFormMutationsSupplierContext<
   };
 }
 
+export interface MigrateLhcFormResult<F extends NihLhcForm = NihLhcForm> {
+  readonly isSuccessful: boolean;
+  readonly mutationResult:
+    | jm.JsonPatchMutationError
+    | jm.JsonPatchMutationResult<F>;
+  readonly suggestedPatchOps: jm.JsonPatchOps;
+  readonly compare: (invertible?: boolean) => jm.JsonPatchOps;
+}
+
 export function migrateLhcForm<F extends NihLhcForm = NihLhcForm>(
   src: F,
   formMutSupplier: LhcFormJsonPatchMutationsSupplier<F>,
   formCtxCreator: LhcFormMutationsSupplierContextConstructor<F> =
     typicalLhcFormMutationsSupplierContext,
-): jm.JsonMutationError | jm.JsonMutationResult<F> {
+): MigrateLhcFormResult<F> {
   const formJpmsCtx = formCtxCreator(src);
   formMutSupplier(formJpmsCtx);
-  const patchOps = jm.filterInvalidOps(formJpmsCtx.formJPMS.patchOps(), src);
-  const mutator = jm.jsonPatchMutator(src, patchOps);
-  return mutator();
+  const suggestedPatchOps = formJpmsCtx.formJPMS.patchOps();
+  const filteredPatchOps = jm.filterInvalidOps(suggestedPatchOps, src);
+  const mutator = jm.jsonPatchMutator(src, filteredPatchOps);
+  const mutationResult = mutator();
+  if (
+    jm.isJsonPatchMutationResult<F>(mutationResult) ||
+    jm.isJsonPatchMutationError(mutationResult)
+  ) {
+    return {
+      isSuccessful: jm.isJsonPatchMutationResult<F>(mutationResult),
+      mutationResult,
+      suggestedPatchOps,
+      compare: (invertible?: boolean): jm.JsonPatchOps => {
+        if (jm.isJsonPatchMutationResult<F>(mutationResult)) {
+          return jp.compare(src, mutationResult.mutated, invertible);
+        }
+        throw Error("mutationResult is not a valid mutation");
+      },
+    };
+  } else {
+    throw Error(
+      "Mutation Result is neither a JsonPatchMutationError nor JsonPatchMutationResult",
+    );
+  }
 }
 
 export function migrateLhcFormFile<F extends NihLhcForm = NihLhcForm>(
   src: string | URL,
   mp: LhcFormJsonPatchMutationsSupplier<F>,
-): jm.JsonMutationError | jm.JsonMutationResult<F> {
+): MigrateLhcFormResult<F> {
   const lhcForm = readLhcFormFileSync(src) as F;
   return migrateLhcForm(lhcForm, mp);
 }

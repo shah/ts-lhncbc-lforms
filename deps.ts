@@ -7,3 +7,4 @@ export * as inflect from "https://denopkg.com/shah/text-inflect@v1.0.5/mod.ts";
 export * as inspect from "https://denopkg.com/shah/ts-inspect@v0.8.8/mod.ts";
 export * as jsonMutator from "https://denopkg.com/shah/ts-json-mutator@v0.1.1/mod.ts";
 export * as safety from "https://denopkg.com/shah/ts-safety@v0.3.0/mod.ts";
+export * as jsonPatch from "https://denopkg.com/Starcounter-Jack/JSON-Patch@3.0.0-1/index.mjs";

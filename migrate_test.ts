@@ -49,14 +49,15 @@ Deno.test(`mutate LHC Form values (for data migrations)`, () => {
     ]);
   }, quesCodesRegistry);
 
-  const result = mod.migrateLhcFormFile(
+  const mlfr = mod.migrateLhcFormFile(
     testFilePath("test5-institution-profile.lhc-form.json"),
     lfmp,
   );
-  ta.assert(jm.isJsonPatchMutationResult(result));
-  ta.assert(result.mutated);
+  ta.assert(jm.isJsonPatchMutationResult(mlfr.mutationResult));
+  ta.assert(mlfr.mutationResult.mutated);
 
   // we created 14 patch operations but only 7 are valid so those are kept;
   // the others probaby weren't found in the source so they were filtered
-  ta.assertEquals(result.patchOps.length, 7);
+  ta.assertEquals(mlfr.suggestedPatchOps.length, 15);
+  ta.assertEquals(mlfr.mutationResult.patchOps.length, 7);
 });
