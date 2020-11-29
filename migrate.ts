@@ -27,7 +27,7 @@ export function lhcFormSubItemMutationsSupplier(
   );
 }
 
-export interface LhcFormMutationsPreparer<F extends NihLhcForm> {
+export interface LhcFormMutationsPreparer<F extends NihLhcForm = NihLhcForm> {
   (
     form: F,
     formJPMS: jm.JsonPatchMutationsSupplier,
@@ -35,7 +35,7 @@ export interface LhcFormMutationsPreparer<F extends NihLhcForm> {
 }
 
 export interface LhcFormTopLevelItemMutationsPreparer<
-  F extends NihLhcForm,
+  F extends NihLhcForm = NihLhcForm,
   I extends FormItem = FormItem,
 > {
   (
@@ -48,7 +48,7 @@ export interface LhcFormTopLevelItemMutationsPreparer<
 }
 
 export interface LhcFormSubItemMutationsPreparer<
-  F extends NihLhcForm,
+  F extends NihLhcForm = NihLhcForm,
   I extends FormItem = FormItem,
 > {
   (
@@ -65,21 +65,30 @@ export interface LhcFormSubItemMutationsPreparer<
 export function lhcFormTopLevelItemMutationsQuesCodeRegistry<F>(
   registry: Record<
     string,
-    LhcFormTopLevelItemMutationsPreparer<F>
+    | LhcFormTopLevelItemMutationsPreparer<F>
+    | LhcFormTopLevelItemMutationsPreparer<F>[]
   >,
 ): LhcFormTopLevelItemMutationsPreparer<F> {
   return (item, itemJPMS, index, form, formJPMS) => {
     if (item.questionCode) {
       const preparer = registry[item.questionCode];
       if (preparer) {
-        return preparer(item, itemJPMS, index, form, formJPMS);
+        if (Array.isArray(preparer)) {
+          let result;
+          for (const p of preparer) {
+            result = p(item, itemJPMS, index, form, formJPMS);
+          }
+          return result;
+        } else {
+          return preparer(item, itemJPMS, index, form, formJPMS);
+        }
       }
     }
     return undefined;
   };
 }
 
-export function lhcFormMutationsPreparer<F extends NihLhcForm>(
+export function lhcFormMutationsPreparer<F extends NihLhcForm = NihLhcForm>(
   prepareForm: (form: F, formJPMS: jm.JsonPatchMutationsSupplier) => void,
   prepareItem: LhcFormTopLevelItemMutationsPreparer<F>,
 ): LhcFormMutationsPreparer<F> {
@@ -116,7 +125,7 @@ export function lhcFormMutationsPreparer<F extends NihLhcForm>(
   };
 }
 
-export function migrateLhcForm<F extends NihLhcForm>(
+export function migrateLhcForm<F extends NihLhcForm = NihLhcForm>(
   src: F,
   mp: LhcFormMutationsPreparer<F>,
 ): jm.JsonMutationError | jm.JsonMutationResult<F> {
@@ -126,7 +135,7 @@ export function migrateLhcForm<F extends NihLhcForm>(
   return mutator();
 }
 
-export function migrateLhcFormFile<F extends NihLhcForm>(
+export function migrateLhcFormFile<F extends NihLhcForm = NihLhcForm>(
   src: string | URL,
   mp: LhcFormMutationsPreparer<F>,
 ): jm.JsonMutationError | jm.JsonMutationResult<F> {

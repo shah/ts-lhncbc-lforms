@@ -27,9 +27,10 @@ Deno.test(`mutate LHC Form values (for data migrations)`, () => {
     mutations.removeValues(...removeValues);
     return undefined;
   };
-  const qcRegistry: Record<
+  const quesCodeRegistry: Record<
     string,
-    mod.LhcFormTopLevelItemMutationsPreparer<NihLhcForm>
+    | mod.LhcFormTopLevelItemMutationsPreparer<NihLhcForm>
+    | mod.LhcFormTopLevelItemMutationsPreparer<NihLhcForm>[]
   > = {
     "002-01-01": removeFour,
     "002-01-02": removeFour,
@@ -52,7 +53,7 @@ Deno.test(`mutate LHC Form values (for data migrations)`, () => {
         "/type",
       ]);
     },
-    mod.lhcFormTopLevelItemMutationsQuesCodeRegistry(qcRegistry),
+    mod.lhcFormTopLevelItemMutationsQuesCodeRegistry(quesCodeRegistry),
   );
 
   const result = mod.migrateLhcFormFile(
