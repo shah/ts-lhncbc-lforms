@@ -38,6 +38,12 @@ export interface LhcFormMutationsSupplierContext<
   readonly formJPMS: jm.JsonPatchMutationsSupplier;
 }
 
+export interface LhcFormMutationsSupplierContextConstructor<
+  F extends NihLhcForm = NihLhcForm,
+> {
+  (form: F): LhcFormMutationsSupplierContext<F>;
+}
+
 export interface LhcFormItemMutationsSupplierContext<
   F extends NihLhcForm = NihLhcForm,
 > extends LhcFormMutationsSupplierContext<F> {
@@ -197,14 +203,22 @@ export function lhcFormMutationsSupplier<F extends NihLhcForm = NihLhcForm>(
   };
 }
 
+export function typicalLhcFormMutationsSupplierContext<
+  F extends NihLhcForm = NihLhcForm,
+>(form: F): LhcFormMutationsSupplierContext<F> {
+  return {
+    form,
+    formJPMS: jm.jsonPatchMutationsSupplier(),
+  };
+}
+
 export function migrateLhcForm<F extends NihLhcForm = NihLhcForm>(
   src: F,
   formMutSupplier: LhcFormJsonPatchMutationsSupplier<F>,
+  formCtxCreator: LhcFormMutationsSupplierContextConstructor<F> =
+    typicalLhcFormMutationsSupplierContext,
 ): jm.JsonMutationError | jm.JsonMutationResult<F> {
-  const formJpmsCtx = {
-    form: src,
-    formJPMS: jm.jsonPatchMutationsSupplier(),
-  };
+  const formJpmsCtx = formCtxCreator(src);
   formMutSupplier(formJpmsCtx);
   const patchOps = jm.filterInvalidOps(formJpmsCtx.formJPMS.patchOps(), src);
   const mutator = jm.jsonPatchMutator(src, patchOps);
