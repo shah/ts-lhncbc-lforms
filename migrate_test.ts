@@ -40,6 +40,8 @@ Deno.test(`mutate LHC Form values (for data migrations)`, () => {
   let commonEncountered = 0;
   let noMatchEncountered = 0;
   let reportMatchEncountered = 0;
+  let itemsWithAnswersEncountered = 0;
+  let answersEncountered = 0;
   const lfmp = mod.lhcFormFlexibleMutationsSupplier(
     (formCtx) => {
       formCtx.formJPMS.removeValues(...[
@@ -55,8 +57,14 @@ Deno.test(`mutate LHC Form values (for data migrations)`, () => {
       },
       exactMutators: qcExactSuppliers,
       regExMutators: qcRegExSuppliers,
-      everyMutator: () => {
+      everyMutator: (ctx) => {
         commonEncountered++;
+        if (ctx.forEachAnswer) {
+          itemsWithAnswersEncountered++;
+          ctx.forEachAnswer(() => {
+            answersEncountered++;
+          });
+        }
         return undefined;
       },
       noMatchMutator: () => {
@@ -76,6 +84,8 @@ Deno.test(`mutate LHC Form values (for data migrations)`, () => {
   ta.assertEquals(commonEncountered, 31);
   ta.assertEquals(noMatchEncountered, 27);
   ta.assertEquals(reportMatchEncountered, 4);
+  ta.assertEquals(itemsWithAnswersEncountered, 4);
+  ta.assertEquals(answersEncountered, 21);
   ta.assert(jm.isJsonPatchMutationResult(mlfr.mutationResult));
   ta.assert(mlfr.mutationResult.mutated);
 

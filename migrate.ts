@@ -1,31 +1,31 @@
 import { jsonMutator as jm, jsonPatch as jp } from "./deps.ts";
-import { FormItem, NihLhcForm } from "./lform.ts";
+import { FormItem, ItemAnswer, NihLhcForm } from "./lform.ts";
 import { readLhcFormFileSync } from "./persist.ts";
 
-export function lhcFormTopLevelItemMutationsSupplier(
-  jpms: jm.JsonPatchMutationsSupplier,
-  itemIndex: number,
-): jm.JsonPatchMutationsSupplier {
-  return jm.jsonPatchAnchoredMutationsSupplier(
-    jpms,
-    (path: jm.JsonPointer): jm.JsonPointer => {
-      return `/items/${itemIndex}/${path}`;
-    },
-  );
-}
+// export function lhcFormTopLevelItemMutationsSupplier(
+//   jpms: jm.JsonPatchMutationsSupplier,
+//   itemIndex: number,
+// ): jm.JsonPatchMutationsSupplier {
+//   return jm.jsonPatchAnchoredMutationsSupplier(
+//     jpms,
+//     (path: jm.JsonPointer): jm.JsonPointer => {
+//       return `/items/${itemIndex}/${path}`;
+//     },
+//   );
+// }
 
-export function lhcFormSubItemMutationsSupplier(
-  jpms: jm.JsonPatchMutationsSupplier,
-  tlItemIndex: number,
-  subItemIndex: number,
-): jm.JsonPatchMutationsSupplier {
-  return jm.jsonPatchAnchoredMutationsSupplier(
-    jpms,
-    (path: jm.JsonPointer): jm.JsonPointer => {
-      return `/items/${tlItemIndex}/items/${subItemIndex}/${path}`;
-    },
-  );
-}
+// export function lhcFormSubItemMutationsSupplier(
+//   jpms: jm.JsonPatchMutationsSupplier,
+//   tlItemIndex: number,
+//   subItemIndex: number,
+// ): jm.JsonPatchMutationsSupplier {
+//   return jm.jsonPatchAnchoredMutationsSupplier(
+//     jpms,
+//     (path: jm.JsonPointer): jm.JsonPointer => {
+//       return `/items/${tlItemIndex}/items/${subItemIndex}/${path}`;
+//     },
+//   );
+// }
 
 export interface LhcFormMutationsSupplierContext<
   F extends NihLhcForm,
@@ -47,6 +47,18 @@ export interface LhcFormItemMutationsSupplierContext<
   readonly item: FormItem;
   readonly itemJPMS: jm.JsonPatchMutationsSupplier;
   readonly itemIndexInParent: number;
+  readonly forEachAnswer?: (
+    handler: (ctx: LhcFormItemAnswerMutationsSupplierContext<F>) => void,
+  ) => void;
+}
+
+export interface LhcFormItemAnswerMutationsSupplierContext<
+  F extends NihLhcForm,
+> extends LhcFormMutationsSupplierContext<F> {
+  readonly item: LhcFormItemMutationsSupplierContext<F>;
+  readonly answer: string | ItemAnswer;
+  readonly answerIndexInItem: number;
+  readonly answerJPMS: jm.JsonPatchMutationsSupplier;
 }
 
 export interface LhcFormSubItemMutationsSupplierContext<
@@ -235,7 +247,36 @@ export function lhcFormFlexibleMutationsSupplier<
             itemLevel: 0,
             item: tlItem,
             itemIndexInParent: tlIdx,
-            itemJPMS: lhcFormTopLevelItemMutationsSupplier(formJPMS, tlIdx),
+            itemJPMS: jm.jsonPatchAnchoredMutationsSupplier(
+              formJPMS,
+              (path: jm.JsonPointer): jm.JsonPointer => {
+                return `/items/${tlIdx}/${path}`;
+              },
+            ),
+            forEachAnswer: tlItem.answers
+              ? (handler) => {
+                for (
+                  let ansIdx = 0;
+                  ansIdx < tlItem.answers!.length;
+                  ansIdx++
+                ) {
+                  handler(
+                    {
+                      ...formCtx,
+                      item: tlCtx,
+                      answer: tlItem.answers![ansIdx],
+                      answerIndexInItem: ansIdx,
+                      answerJPMS: jm.jsonPatchAnchoredMutationsSupplier(
+                        formJPMS,
+                        (path: jm.JsonPointer): jm.JsonPointer => {
+                          return `/items/${tlIdx}/answers/${ansIdx}/${path}`;
+                        },
+                      ),
+                    },
+                  );
+                }
+              }
+              : undefined,
           };
           supplyItemMutations(tlCtx);
           if (tlItem.items) {
@@ -246,11 +287,36 @@ export function lhcFormFlexibleMutationsSupplier<
                 itemLevel: 1,
                 item: siItem,
                 itemIndexInParent: subIdx,
-                itemJPMS: lhcFormSubItemMutationsSupplier(
+                itemJPMS: jm.jsonPatchAnchoredMutationsSupplier(
                   formJPMS,
-                  tlIdx,
-                  subIdx,
+                  (path: jm.JsonPointer): jm.JsonPointer => {
+                    return `/items/${tlIdx}/items/${subIdx}/${path}`;
+                  },
                 ),
+                forEachAnswer: siItem.answers
+                  ? (handler) => {
+                    for (
+                      let ansIdx = 0;
+                      ansIdx < siItem.answers!.length;
+                      ansIdx++
+                    ) {
+                      handler(
+                        {
+                          ...formCtx,
+                          item: siCtx,
+                          answer: siItem.answers![ansIdx],
+                          answerIndexInItem: ansIdx,
+                          answerJPMS: jm.jsonPatchAnchoredMutationsSupplier(
+                            formJPMS,
+                            (path: jm.JsonPointer): jm.JsonPointer => {
+                              return `/items/${tlIdx}/items/${subIdx}/answers/${ansIdx}/${path}`;
+                            },
+                          ),
+                        },
+                      );
+                    }
+                  }
+                  : undefined,
                 parentItem: tlCtx,
                 ancestors: [tlCtx], // TODO: when more levels are assigned, add all parents
               };
