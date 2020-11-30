@@ -97,29 +97,48 @@ export interface LhcFormItemFlexibleMutationsSuppliers<
 export function lchFormQuestionCodeMutationsSuppliers<
   F extends NihLhcForm = NihLhcForm,
 >(
-  { exactMutators, regExMutators, defaultMutator }: {
+  { exactMutators, regExMutators, noMatchMutator, everyMutator }: {
     exactMutators?: Map<string, LhcFormItemJsonPatchMutationsSupplier<F>>;
     regExMutators?: Map<RegExp, LhcFormItemJsonPatchMutationsSupplier<F>>;
-    defaultMutator?: (
+    everyMutator?: (
+      questionCodeKey: string,
+    ) => LhcFormItemJsonPatchMutationsSupplier<F> | undefined;
+    noMatchMutator?: (
       questionCodeKey: string,
     ) => LhcFormItemJsonPatchMutationsSupplier<F> | undefined;
   },
 ): LhcFormItemFlexibleMutationsSuppliers<F> {
   const undefinedQC = "[UNDEFINED]";
-  const findQuesCodeMutSupplier = (
-    questionCodeKey: string,
-  ): LhcFormItemJsonPatchMutationsSupplier<F> | undefined => {
+  const prepareWithEvery = (
+    qc: string,
+    s?: LhcFormItemJsonPatchMutationsSupplier<F>,
+  ):
+    | LhcFormItemJsonPatchMutationsSupplier<F>
+    | LhcFormItemJsonPatchMutationsSupplier<F>[]
+    | undefined => {
+    const common = everyMutator ? everyMutator(qc) : undefined;
+    if (common && s) return [s, common];
+    if (s) return s;
+    if (common) return common;
+    return undefined;
+  };
+  const findQuesCodeMutSupplier = (qc: string):
+    | LhcFormItemJsonPatchMutationsSupplier<F>
+    | LhcFormItemJsonPatchMutationsSupplier<F>[]
+    | undefined => {
     if (exactMutators) {
-      const found = exactMutators.get(questionCodeKey);
-      if (found) return found;
+      const found = exactMutators.get(qc);
+      if (found) return prepareWithEvery(qc, found);
     }
     if (regExMutators) {
       for (const [regExp, val] of regExMutators.entries()) {
-        if (questionCodeKey.match(regExp)) return val;
+        if (qc.match(regExp)) {
+          return prepareWithEvery(qc, val);
+        }
       }
     }
-    if (defaultMutator) {
-      return defaultMutator(questionCodeKey);
+    if (noMatchMutator) {
+      return prepareWithEvery(qc, noMatchMutator(qc));
     }
     return undefined;
   };
