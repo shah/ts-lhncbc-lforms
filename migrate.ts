@@ -100,45 +100,35 @@ export function lchFormQuestionCodeMutationsSuppliers<
   { exactMutators, regExMutators, noMatchMutator, everyMutator }: {
     exactMutators?: Map<string, LhcFormItemJsonPatchMutationsSupplier<F>>;
     regExMutators?: Map<RegExp, LhcFormItemJsonPatchMutationsSupplier<F>>;
-    everyMutator?: (
-      questionCodeKey: string,
-    ) => LhcFormItemJsonPatchMutationsSupplier<F> | undefined;
+    everyMutator?: LhcFormItemJsonPatchMutationsSupplier<F>;
     noMatchMutator?: (
       questionCodeKey: string,
     ) => LhcFormItemJsonPatchMutationsSupplier<F> | undefined;
   },
 ): LhcFormItemFlexibleMutationsSuppliers<F> {
   const undefinedQC = "[UNDEFINED]";
-  const prepareWithEvery = (
-    qc: string,
-    s?: LhcFormItemJsonPatchMutationsSupplier<F>,
-  ):
-    | LhcFormItemJsonPatchMutationsSupplier<F>
-    | LhcFormItemJsonPatchMutationsSupplier<F>[]
-    | undefined => {
-    const common = everyMutator ? everyMutator(qc) : undefined;
-    if (common && s) return [s, common];
-    if (s) return s;
-    if (common) return common;
-    return undefined;
-  };
   const findQuesCodeMutSupplier = (qc: string):
     | LhcFormItemJsonPatchMutationsSupplier<F>
     | LhcFormItemJsonPatchMutationsSupplier<F>[]
     | undefined => {
     if (exactMutators) {
       const found = exactMutators.get(qc);
-      if (found) return prepareWithEvery(qc, found);
+      if (found) return everyMutator ? [found, everyMutator] : found;
     }
     if (regExMutators) {
+      const found: LhcFormItemJsonPatchMutationsSupplier<F>[] = [];
       for (const [regExp, val] of regExMutators.entries()) {
-        if (qc.match(regExp)) {
-          return prepareWithEvery(qc, val);
-        }
+        if (qc.match(regExp)) found.push(val);
+      }
+      if (found.length > 0) {
+        return everyMutator ? [...found, everyMutator] : found;
       }
     }
     if (noMatchMutator) {
-      return prepareWithEvery(qc, noMatchMutator(qc));
+      const found = noMatchMutator(qc);
+      if (found && everyMutator) return [found, everyMutator];
+      if (found) return found;
+      if (everyMutator) return everyMutator;
     }
     return undefined;
   };
