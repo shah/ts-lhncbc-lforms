@@ -33,12 +33,9 @@ Deno.test(`mutate LHC Form values (for data migrations)`, () => {
   qcExactSuppliers.set("Q002-02-11", (ctx) => {
     ctx.itemJPMS.removeValues(`dataType`, `hideUnits`);
   });
-  qcExactSuppliers.set(
-    mod.questionCodesHierarchy("002-02-00", "002-02-01"),
-    (ctx) => {
-      ctx.itemJPMS.removeValues(`codingInstructions`);
-    },
-  );
+  qcExactSuppliers.set("002-02-00::002-02-01", (ctx) => {
+    ctx.itemJPMS.removeValues(`codingInstructions`);
+  });
 
   let commonEncountered = 0;
   let noMatchEncountered = 0;
@@ -53,6 +50,9 @@ Deno.test(`mutate LHC Form values (for data migrations)`, () => {
       ]);
     },
     mod.lchFormQuestionCodeMutationsSuppliers({
+      questionCodesHierarchySearchKey: (...questionCodes: string[]): string => {
+        return questionCodes.join("::");
+      },
       exactMutators: qcExactSuppliers,
       regExMutators: qcRegExSuppliers,
       everyMutator: () => {

@@ -2,10 +2,6 @@ import { jsonMutator as jm, jsonPatch as jp } from "./deps.ts";
 import { FormItem, NihLhcForm } from "./lform.ts";
 import { readLhcFormFileSync } from "./persist.ts";
 
-export function questionCodesHierarchy(...questionCodes: string[]): string {
-  return questionCodes.join("::");
-}
-
 export function lhcFormTopLevelItemMutationsSupplier(
   jpms: jm.JsonPatchMutationsSupplier,
   itemIndex: number,
@@ -94,32 +90,46 @@ export interface LhcFormItemFlexibleMutationsSuppliers<
     | undefined;
 }
 
+export interface LchFormQuestionCodeMutationsSuppliersOptions<
+  F extends NihLhcForm,
+> {
+  readonly questionCodesHierarchySearchKey: (
+    ...questionCodes: string[]
+  ) => string;
+  readonly exactMutators?: Map<
+    string,
+    LhcFormItemJsonPatchMutationsSupplier<F>
+  >;
+  readonly skipRegSearchExAfterExactMatch?: boolean;
+  readonly regExMutators?: Map<
+    RegExp,
+    LhcFormItemJsonPatchMutationsSupplier<F>
+  >;
+  readonly everyMutator?: LhcFormItemJsonPatchMutationsSupplier<F>;
+  readonly noMatchMutator?: (
+    questionCodeKey: string,
+  ) => LhcFormItemJsonPatchMutationsSupplier<F> | undefined;
+  readonly reportMatch?: (
+    questionCode: string,
+    supplier:
+      | LhcFormItemJsonPatchMutationsSupplier<F>
+      | LhcFormItemJsonPatchMutationsSupplier<F>[],
+    regExp?: RegExp,
+  ) => void;
+}
+
 export function lchFormQuestionCodeMutationsSuppliers<
   F extends NihLhcForm,
 >(
   {
+    questionCodesHierarchySearchKey,
     exactMutators,
     skipRegSearchExAfterExactMatch,
     regExMutators,
     noMatchMutator,
     everyMutator,
     reportMatch,
-  }: {
-    exactMutators?: Map<string, LhcFormItemJsonPatchMutationsSupplier<F>>;
-    skipRegSearchExAfterExactMatch?: boolean;
-    regExMutators?: Map<RegExp, LhcFormItemJsonPatchMutationsSupplier<F>>;
-    everyMutator?: LhcFormItemJsonPatchMutationsSupplier<F>;
-    noMatchMutator?: (
-      questionCodeKey: string,
-    ) => LhcFormItemJsonPatchMutationsSupplier<F> | undefined;
-    reportMatch?: (
-      questionCode: string,
-      supplier:
-        | LhcFormItemJsonPatchMutationsSupplier<F>
-        | LhcFormItemJsonPatchMutationsSupplier<F>[],
-      regExp?: RegExp,
-    ) => void;
-  },
+  }: LchFormQuestionCodeMutationsSuppliersOptions<F>,
 ): LhcFormItemFlexibleMutationsSuppliers<F> {
   const undefinedQC = "[UNDEFINED]";
   const findQuesCodeMutSupplier = (qc: string):
@@ -162,7 +172,7 @@ export function lchFormQuestionCodeMutationsSuppliers<
     if (isLhcFormSubItemMutationsSupplierContext(ctx)) {
       if (ctx.item.questionCode) {
         return findQuesCodeMutSupplier(
-          questionCodesHierarchy(
+          questionCodesHierarchySearchKey(
             ...ctx.ancestors.map((a) => a.item.questionCode || undefinedQC),
             ctx.item.questionCode || undefinedQC,
           ),
