@@ -99,10 +99,11 @@ export function lchFormQuestionCodeMutationsSuppliers<
 >(
   {
     exactMutators,
+    skipRegSearchExAfterExactMatch,
     regExMutators,
     noMatchMutator,
     everyMutator,
-    skipRegSearchExAfterExactMatch,
+    reportMatch,
   }: {
     exactMutators?: Map<string, LhcFormItemJsonPatchMutationsSupplier<F>>;
     skipRegSearchExAfterExactMatch?: boolean;
@@ -111,6 +112,13 @@ export function lchFormQuestionCodeMutationsSuppliers<
     noMatchMutator?: (
       questionCodeKey: string,
     ) => LhcFormItemJsonPatchMutationsSupplier<F> | undefined;
+    reportMatch?: (
+      questionCode: string,
+      supplier:
+        | LhcFormItemJsonPatchMutationsSupplier<F>
+        | LhcFormItemJsonPatchMutationsSupplier<F>[],
+      regExp?: RegExp,
+    ) => void;
   },
 ): LhcFormItemFlexibleMutationsSuppliers<F> {
   const undefinedQC = "[UNDEFINED]";
@@ -122,6 +130,7 @@ export function lchFormQuestionCodeMutationsSuppliers<
     if (exactMutators) {
       const exactMatchFound = exactMutators.get(qc);
       if (exactMatchFound) {
+        if (reportMatch) reportMatch(qc, exactMatchFound);
         if (skipRegSearchExAfterExactMatch) {
           return everyMutator
             ? [exactMatchFound, everyMutator]
@@ -132,7 +141,10 @@ export function lchFormQuestionCodeMutationsSuppliers<
     }
     if (regExMutators) {
       for (const [regExp, val] of regExMutators.entries()) {
-        if (qc.match(regExp)) allMatches.push(val);
+        if (qc.match(regExp)) {
+          if (reportMatch) reportMatch(qc, val, regExp);
+          allMatches.push(val);
+        }
       }
     }
     if (allMatches.length > 0) {
