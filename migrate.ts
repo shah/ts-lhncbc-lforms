@@ -98,12 +98,14 @@ export interface LchFormQuestionCodeMutationsSuppliersOptions<
   ) => string;
   readonly exactMutators?: Map<
     string,
-    LhcFormItemJsonPatchMutationsSupplier<F>
+    | LhcFormItemJsonPatchMutationsSupplier<F>
+    | LhcFormItemJsonPatchMutationsSupplier<F>[]
   >;
   readonly skipRegSearchExAfterExactMatch?: boolean;
   readonly regExMutators?: Map<
     RegExp,
-    LhcFormItemJsonPatchMutationsSupplier<F>
+    | LhcFormItemJsonPatchMutationsSupplier<F>
+    | LhcFormItemJsonPatchMutationsSupplier<F>[]
   >;
   readonly everyMutator?: LhcFormItemJsonPatchMutationsSupplier<F>;
   readonly noMatchMutator?: (
@@ -142,18 +144,30 @@ export function lchFormQuestionCodeMutationsSuppliers<
       if (exactMatchFound) {
         if (reportMatch) reportMatch(qc, exactMatchFound);
         if (skipRegSearchExAfterExactMatch) {
-          return everyMutator
-            ? [exactMatchFound, everyMutator]
-            : exactMatchFound;
+          return Array.isArray(exactMatchFound)
+            ? (everyMutator
+              ? [...exactMatchFound, everyMutator]
+              : exactMatchFound)
+            : (everyMutator
+              ? [exactMatchFound, everyMutator]
+              : exactMatchFound);
         }
-        allMatches.push(exactMatchFound);
+        if (Array.isArray(exactMatchFound)) {
+          allMatches.push(...exactMatchFound);
+        } else {
+          allMatches.push(exactMatchFound);
+        }
       }
     }
     if (regExMutators) {
       for (const [regExp, val] of regExMutators.entries()) {
         if (qc.match(regExp)) {
           if (reportMatch) reportMatch(qc, val, regExp);
-          allMatches.push(val);
+          if (Array.isArray(val)) {
+            allMatches.push(...val);
+          } else {
+            allMatches.push(val);
+          }
         }
       }
     }
