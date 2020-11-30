@@ -47,6 +47,7 @@ export interface LhcFormMutationsSupplierContextConstructor<
 export interface LhcFormItemMutationsSupplierContext<
   F extends NihLhcForm = NihLhcForm,
 > extends LhcFormMutationsSupplierContext<F> {
+  readonly itemLevel: number;
   readonly item: FormItem;
   readonly itemJPMS: jm.JsonPatchMutationsSupplier;
   readonly itemIndexInParent: number;
@@ -56,12 +57,14 @@ export interface LhcFormSubItemMutationsSupplierContext<
   F extends NihLhcForm = NihLhcForm,
 > extends LhcFormItemMutationsSupplierContext<F> {
   readonly parentItem: LhcFormItemMutationsSupplierContext<F>;
+  readonly ancestors: LhcFormItemMutationsSupplierContext<F>[];
 }
 
 export function isLhcFormItemMutationsSupplierContext<F extends NihLhcForm>(
   o: LhcFormMutationsSupplierContext<F>,
 ): o is LhcFormItemMutationsSupplierContext<F> {
-  return ("item" in o) && ("itemJPMS" in o);
+  return ("itemLevel" in o) && ("item" in o) && ("itemJPMS" in o) &&
+    ("itemIndexInParent" in o);
 }
 
 export function isLhcFormSubItemMutationsSupplierContext<F extends NihLhcForm>(
@@ -76,33 +79,93 @@ export interface LhcFormJsonPatchMutationsSupplier<
   (ctx: LhcFormMutationsSupplierContext<F>): void;
 }
 
-// deno-lint-ignore no-empty-interface
-export interface QuestionCodeMutationsSuppliers<
+export interface LhcFormItemJsonPatchMutationsSupplier<
   F extends NihLhcForm = NihLhcForm,
-> extends
-  Map<
-    string,
-    | LhcFormJsonPatchMutationsSupplier<F>
-    | LhcFormJsonPatchMutationsSupplier<F>[]
-  > {
+> {
+  (ctx: LhcFormItemMutationsSupplierContext<F>): void;
+}
+
+export interface LhcFormItemFlexibleMutationsSuppliers<
+  F extends NihLhcForm = NihLhcForm,
+> {
+  (ctx: LhcFormItemMutationsSupplierContext<F>):
+    | LhcFormItemJsonPatchMutationsSupplier<F>
+    | LhcFormItemJsonPatchMutationsSupplier<F>[]
+    | undefined;
+}
+
+export function lchFormQuestionCodeMutationsSuppliers<
+  F extends NihLhcForm = NihLhcForm,
+>(
+  { exactMutators, regExMutators, defaultMutator }: {
+    exactMutators?: Map<string, LhcFormItemJsonPatchMutationsSupplier<F>>;
+    regExMutators?: Map<RegExp, LhcFormItemJsonPatchMutationsSupplier<F>>;
+    defaultMutator?: (
+      questionCodeKey: string,
+    ) => LhcFormItemJsonPatchMutationsSupplier<F> | undefined;
+  },
+): LhcFormItemFlexibleMutationsSuppliers<F> {
+  const undefinedQC = "[UNDEFINED]";
+  const findQuesCodeMutSupplier = (
+    questionCodeKey: string,
+  ): LhcFormItemJsonPatchMutationsSupplier<F> | undefined => {
+    if (exactMutators) {
+      const found = exactMutators.get(questionCodeKey);
+      if (found) return found;
+    }
+    if (regExMutators) {
+      for (const [regExp, val] of regExMutators.entries()) {
+        if (questionCodeKey.match(regExp)) return val;
+      }
+    }
+    if (defaultMutator) {
+      return defaultMutator(questionCodeKey);
+    }
+    return undefined;
+  };
+  return (ctx) => {
+    if (isLhcFormSubItemMutationsSupplierContext(ctx)) {
+      if (ctx.item.questionCode) {
+        return findQuesCodeMutSupplier(
+          questionCodesHierarchy(
+            ...ctx.ancestors.map((a) => a.item.questionCode || undefinedQC),
+            ctx.item.questionCode || undefinedQC,
+          ),
+        );
+      }
+    } else {
+      if (ctx.item.questionCode) {
+        return findQuesCodeMutSupplier(ctx.item.questionCode);
+      }
+    }
+  };
 }
 
 /**
- * lhcFormQuestionCodeMutationsSupplier createa a LhcFormJsonPatchMutationsSupplier 
+ * lhcFormFlexibleMutationsSupplier creates an LhcFormJsonPatchMutationsSupplier 
  * which loops through each top-level form item and sub-items and checks to see if
- * a question code ("QC") key is mapped to a LhcFormJsonPatchMutationsSupplier. If a
- * QC is mapped, it runs the method.
- * @param prepareForm method called for the form mutations
- * @param quesCodeMutRegistry dictionary of QCs mapped to mutation suppliers
+ * a LhcFormJsonPatchMutationsSupplier(s) is available. If a supplier is available
+ * it is executed.
+ * @param itemMutationSuppliers provides a mutations supplier for a given ctx
  */
-export function lhcFormQuestionCodeMutationsSupplier<
+export function lhcFormFlexibleMutationsSupplier<
   F extends NihLhcForm = NihLhcForm,
 >(
-  prepareForm: LhcFormJsonPatchMutationsSupplier<F>,
-  quesCodeMutRegistry: QuestionCodeMutationsSuppliers,
+  formMutationSupplier: LhcFormJsonPatchMutationsSupplier<F>,
+  itemMutationSuppliers: LhcFormItemFlexibleMutationsSuppliers<F>,
 ): LhcFormJsonPatchMutationsSupplier<F> {
+  const supplyItemMutations = (ctx: LhcFormItemMutationsSupplierContext<F>) => {
+    const supplier = itemMutationSuppliers(ctx);
+    if (supplier) {
+      if (Array.isArray(supplier)) {
+        supplier.forEach((s) => s(ctx));
+      } else {
+        supplier(ctx);
+      }
+    }
+  };
   return (formCtx: LhcFormMutationsSupplierContext<F>): void => {
-    prepareForm(formCtx);
+    formMutationSupplier(formCtx);
     const { form, formJPMS } = formCtx;
     if (form.items) {
       for (let tlIdx = 0; tlIdx < form.items.length; tlIdx++) {
@@ -110,92 +173,30 @@ export function lhcFormQuestionCodeMutationsSupplier<
         if (tlItem.questionCode) {
           const tlCtx: LhcFormItemMutationsSupplierContext<F> = {
             ...formCtx,
+            itemLevel: 0,
             item: tlItem,
             itemIndexInParent: tlIdx,
             itemJPMS: lhcFormTopLevelItemMutationsSupplier(formJPMS, tlIdx),
           };
-          const tlmSupplier = quesCodeMutRegistry.get(tlItem.questionCode);
-          if (tlmSupplier) {
-            if (Array.isArray(tlmSupplier)) {
-              tlmSupplier.forEach((s) => s(tlCtx));
-            } else {
-              tlmSupplier(tlCtx);
-            }
-          }
+          supplyItemMutations(tlCtx);
           if (tlItem.items) {
             for (let subIdx = 0; subIdx < tlItem.items.length; subIdx++) {
               const siItem = tlItem.items[subIdx];
-              const simSupplier = quesCodeMutRegistry.get(
-                questionCodesHierarchy(
-                  tlItem.questionCode,
-                  siItem.questionCode || "*",
+              const siCtx: LhcFormSubItemMutationsSupplierContext<F> = {
+                ...formCtx,
+                itemLevel: 1,
+                item: siItem,
+                itemIndexInParent: subIdx,
+                itemJPMS: lhcFormSubItemMutationsSupplier(
+                  formJPMS,
+                  tlIdx,
+                  subIdx,
                 ),
-              );
-              if (simSupplier) {
-                const siCtx: LhcFormSubItemMutationsSupplierContext<F> = {
-                  ...formCtx,
-                  item: siItem,
-                  itemIndexInParent: subIdx,
-                  itemJPMS: lhcFormSubItemMutationsSupplier(
-                    formJPMS,
-                    tlIdx,
-                    subIdx,
-                  ),
-                  parentItem: tlCtx,
-                };
-                if (Array.isArray(simSupplier)) {
-                  for (const p of simSupplier) {
-                    simSupplier.forEach((s) => s(siCtx));
-                  }
-                } else {
-                  simSupplier(siCtx);
-                }
-              }
+                parentItem: tlCtx,
+                ancestors: [tlCtx], // TODO: when more levels are assigned, add all parents
+              };
+              supplyItemMutations(siCtx);
             }
-          }
-        }
-      }
-    }
-  };
-}
-
-/**
- * lhcFormMutationsSupplier createa a LhcFormJsonPatchMutationsSupplier which
- * loops through each top-level form item and sub-items and calls the wrapped
- * `supplier` argument.
- * @param supplier method called for the form, top-level items, and sub-items
- */
-export function lhcFormMutationsSupplier<F extends NihLhcForm = NihLhcForm>(
-  supplier: LhcFormJsonPatchMutationsSupplier<F>,
-): LhcFormJsonPatchMutationsSupplier<F> {
-  return (formCtx: LhcFormMutationsSupplierContext<F>): void => {
-    supplier(formCtx);
-    const { form, formJPMS } = formCtx;
-    if (form.items) {
-      for (let tlIdx = 0; tlIdx < form.items.length; tlIdx++) {
-        const tlItem = form.items[tlIdx];
-        const tlCtx: LhcFormItemMutationsSupplierContext<F> = {
-          ...formCtx,
-          item: tlItem,
-          itemIndexInParent: tlIdx,
-          itemJPMS: lhcFormTopLevelItemMutationsSupplier(formJPMS, tlIdx),
-        };
-        supplier(tlCtx);
-        if (tlItem.items) {
-          for (let subIdx = 0; subIdx < tlItem.items.length; subIdx++) {
-            const siItem = tlItem.items[subIdx];
-            const siCtx: LhcFormSubItemMutationsSupplierContext<F> = {
-              ...formCtx,
-              item: siItem,
-              itemIndexInParent: subIdx,
-              itemJPMS: lhcFormSubItemMutationsSupplier(
-                formJPMS,
-                tlIdx,
-                subIdx,
-              ),
-              parentItem: tlCtx,
-            };
-            supplier(siCtx);
           }
         }
       }

@@ -13,46 +13,57 @@ function testFilePath(relTestFileName: string): string {
 }
 
 Deno.test(`mutate LHC Form values (for data migrations)`, () => {
-  const removeFour: mod.LhcFormJsonPatchMutationsSupplier = (ctx) => {
-    if (mod.isLhcFormItemMutationsSupplierContext(ctx)) {
-      ctx.itemJPMS.removeValues(
-        `codingInstructions`,
-        `copyrightNotice`,
-        `dataType`,
-        `units`,
-      );
-    }
-  };
-  const quesCodesRegistry: mod.QuestionCodeMutationsSuppliers = new Map(
-    Object.entries({
-      "002-01-01": removeFour,
-      "002-01-02": removeFour,
-      "Q002-02-11": (ctx) => {
-        if (mod.isLhcFormItemMutationsSupplierContext(ctx)) {
-          ctx.itemJPMS.removeValues(`dataType`, `hideUnits`);
-        }
-      },
-      [mod.questionCodesHierarchy("002-02-00", "002-02-01")]: (ctx) => {
-        if (mod.isLhcFormSubItemMutationsSupplierContext(ctx)) {
-          ctx.itemJPMS.removeValue(`codingInstructions`);
-        }
+  const qcExactSuppliers = new Map<
+    string,
+    mod.LhcFormItemJsonPatchMutationsSupplier
+  >();
+  const qcRegExSuppliers = new Map<
+    RegExp,
+    mod.LhcFormItemJsonPatchMutationsSupplier
+  >();
+  qcRegExSuppliers.set(/^002-01-01|002-01-02$/, (ctx) => {
+    ctx.itemJPMS.removeValues(
+      `codingInstructions`,
+      `copyrightNotice`,
+      `dataType`,
+      `units`,
+    );
+  });
+  qcExactSuppliers.set("Q002-02-11", (ctx) => {
+    ctx.itemJPMS.removeValues(`dataType`, `hideUnits`);
+  });
+  qcExactSuppliers.set(
+    mod.questionCodesHierarchy("002-02-00", "002-02-01"),
+    (ctx) => {
+      ctx.itemJPMS.removeValues(`codingInstructions`);
+    },
+  );
+
+  let defaultEncountered = 0;
+  const lfmp = mod.lhcFormFlexibleMutationsSupplier(
+    (formCtx) => {
+      formCtx.formJPMS.removeValues(...[
+        "/code",
+        "/PATH_DELIMITER",
+        "/template",
+        "/type",
+      ]);
+    },
+    mod.lchFormQuestionCodeMutationsSuppliers({
+      exactMutators: qcExactSuppliers,
+      regExMutators: qcRegExSuppliers,
+      defaultMutator: () => {
+        defaultEncountered++;
+        return undefined;
       },
     }),
   );
-
-  const lfmp = mod.lhcFormQuestionCodeMutationsSupplier((ctx) => {
-    ctx.formJPMS.removeValues(...[
-      "/code",
-      "/PATH_DELIMITER",
-      "/template",
-      "/type",
-    ]);
-  }, quesCodesRegistry);
 
   const mlfr = mod.migrateLhcFormFile(
     testFilePath("test5-institution-profile.lhc-form.json"),
     lfmp,
   );
+  ta.assertEquals(defaultEncountered, 27);
   ta.assert(jm.isJsonPatchMutationResult(mlfr.mutationResult));
   ta.assert(mlfr.mutationResult.mutated);
 
