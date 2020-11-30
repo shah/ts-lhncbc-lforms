@@ -32,20 +32,20 @@ export function lhcFormSubItemMutationsSupplier(
 }
 
 export interface LhcFormMutationsSupplierContext<
-  F extends NihLhcForm = NihLhcForm,
+  F extends NihLhcForm,
 > {
   readonly form: F;
   readonly formJPMS: jm.JsonPatchMutationsSupplier;
 }
 
 export interface LhcFormMutationsSupplierContextConstructor<
-  F extends NihLhcForm = NihLhcForm,
+  F extends NihLhcForm,
 > {
   (form: F): LhcFormMutationsSupplierContext<F>;
 }
 
 export interface LhcFormItemMutationsSupplierContext<
-  F extends NihLhcForm = NihLhcForm,
+  F extends NihLhcForm,
 > extends LhcFormMutationsSupplierContext<F> {
   readonly itemLevel: number;
   readonly item: FormItem;
@@ -54,7 +54,7 @@ export interface LhcFormItemMutationsSupplierContext<
 }
 
 export interface LhcFormSubItemMutationsSupplierContext<
-  F extends NihLhcForm = NihLhcForm,
+  F extends NihLhcForm,
 > extends LhcFormItemMutationsSupplierContext<F> {
   readonly parentItem: LhcFormItemMutationsSupplierContext<F>;
   readonly ancestors: LhcFormItemMutationsSupplierContext<F>[];
@@ -74,19 +74,19 @@ export function isLhcFormSubItemMutationsSupplierContext<F extends NihLhcForm>(
 }
 
 export interface LhcFormJsonPatchMutationsSupplier<
-  F extends NihLhcForm = NihLhcForm,
+  F extends NihLhcForm,
 > {
   (ctx: LhcFormMutationsSupplierContext<F>): void;
 }
 
 export interface LhcFormItemJsonPatchMutationsSupplier<
-  F extends NihLhcForm = NihLhcForm,
+  F extends NihLhcForm,
 > {
   (ctx: LhcFormItemMutationsSupplierContext<F>): void;
 }
 
 export interface LhcFormItemFlexibleMutationsSuppliers<
-  F extends NihLhcForm = NihLhcForm,
+  F extends NihLhcForm,
 > {
   (ctx: LhcFormItemMutationsSupplierContext<F>):
     | LhcFormItemJsonPatchMutationsSupplier<F>
@@ -95,7 +95,7 @@ export interface LhcFormItemFlexibleMutationsSuppliers<
 }
 
 export function lchFormQuestionCodeMutationsSuppliers<
-  F extends NihLhcForm = NihLhcForm,
+  F extends NihLhcForm,
 >(
   { exactMutators, regExMutators, noMatchMutator, everyMutator }: {
     exactMutators?: Map<string, LhcFormItemJsonPatchMutationsSupplier<F>>;
@@ -168,7 +168,7 @@ export function lchFormQuestionCodeMutationsSuppliers<
  * @param itemMutationSuppliers provides a mutations supplier for a given ctx
  */
 export function lhcFormFlexibleMutationsSupplier<
-  F extends NihLhcForm = NihLhcForm,
+  F extends NihLhcForm,
 >(
   formMutationSupplier: LhcFormJsonPatchMutationsSupplier<F>,
   itemMutationSuppliers: LhcFormItemFlexibleMutationsSuppliers<F>,
@@ -224,7 +224,7 @@ export function lhcFormFlexibleMutationsSupplier<
 }
 
 export function typicalLhcFormMutationsSupplierContext<
-  F extends NihLhcForm = NihLhcForm,
+  F extends NihLhcForm,
 >(form: F): LhcFormMutationsSupplierContext<F> {
   return {
     form,
@@ -232,7 +232,7 @@ export function typicalLhcFormMutationsSupplierContext<
   };
 }
 
-export interface MigrateLhcFormResult<F extends NihLhcForm = NihLhcForm> {
+export interface MigrateLhcFormResult<F extends NihLhcForm> {
   readonly isSuccessful: boolean;
   readonly mutationResult:
     | jm.JsonPatchMutationError
@@ -241,7 +241,7 @@ export interface MigrateLhcFormResult<F extends NihLhcForm = NihLhcForm> {
   readonly compare: (invertible?: boolean) => jm.JsonPatchOps;
 }
 
-export function migrateLhcForm<F extends NihLhcForm = NihLhcForm>(
+export function migrateLhcForm<F extends NihLhcForm>(
   src: F,
   formMutSupplier: LhcFormJsonPatchMutationsSupplier<F>,
   formCtxCreator: LhcFormMutationsSupplierContextConstructor<F> =
@@ -275,7 +275,7 @@ export function migrateLhcForm<F extends NihLhcForm = NihLhcForm>(
   }
 }
 
-export function migrateLhcFormFile<F extends NihLhcForm = NihLhcForm>(
+export function migrateLhcFormFile<F extends NihLhcForm>(
   src: string | URL,
   mp: LhcFormJsonPatchMutationsSupplier<F>,
 ): MigrateLhcFormResult<F> {
@@ -283,13 +283,13 @@ export function migrateLhcFormFile<F extends NihLhcForm = NihLhcForm>(
   return migrateLhcForm(lhcForm, mp);
 }
 
-export interface CompareLhcFormFilesResult<F extends NihLhcForm = NihLhcForm> {
+export interface CompareLhcFormFilesResult<F extends NihLhcForm> {
   readonly srcForm: F;
   readonly compareForm: F;
   readonly patchOps: jm.JsonPatchOps;
 }
 
-export function compareLhcFormFiles<F extends NihLhcForm = NihLhcForm>(
+export function compareLhcFormFiles<F extends NihLhcForm>(
   srcFile: string | URL,
   compareFile: string | URL,
   invertible?: boolean,

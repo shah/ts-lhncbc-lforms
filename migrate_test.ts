@@ -1,5 +1,6 @@
 import { testingAsserts as ta } from "./deps-test.ts";
 import { jsonMutator as jm, path } from "./deps.ts";
+import { NihLhcForm } from "./lform.ts";
 import * as mod from "./mod.ts";
 
 function testFilePath(relTestFileName: string): string {
@@ -15,11 +16,11 @@ function testFilePath(relTestFileName: string): string {
 Deno.test(`mutate LHC Form values (for data migrations)`, () => {
   const qcExactSuppliers = new Map<
     string,
-    mod.LhcFormItemJsonPatchMutationsSupplier
+    mod.LhcFormItemJsonPatchMutationsSupplier<NihLhcForm>
   >();
   const qcRegExSuppliers = new Map<
     RegExp,
-    mod.LhcFormItemJsonPatchMutationsSupplier
+    mod.LhcFormItemJsonPatchMutationsSupplier<NihLhcForm>
   >();
   qcRegExSuppliers.set(/^002-01-01|002-01-02$/, (ctx) => {
     ctx.itemJPMS.removeValues(
