@@ -97,8 +97,15 @@ export interface LhcFormItemFlexibleMutationsSuppliers<
 export function lchFormQuestionCodeMutationsSuppliers<
   F extends NihLhcForm,
 >(
-  { exactMutators, regExMutators, noMatchMutator, everyMutator }: {
+  {
+    exactMutators,
+    regExMutators,
+    noMatchMutator,
+    everyMutator,
+    skipRegSearchExAfterExactMatch,
+  }: {
     exactMutators?: Map<string, LhcFormItemJsonPatchMutationsSupplier<F>>;
+    skipRegSearchExAfterExactMatch?: boolean;
     regExMutators?: Map<RegExp, LhcFormItemJsonPatchMutationsSupplier<F>>;
     everyMutator?: LhcFormItemJsonPatchMutationsSupplier<F>;
     noMatchMutator?: (
@@ -111,18 +118,25 @@ export function lchFormQuestionCodeMutationsSuppliers<
     | LhcFormItemJsonPatchMutationsSupplier<F>
     | LhcFormItemJsonPatchMutationsSupplier<F>[]
     | undefined => {
+    const allMatches: LhcFormItemJsonPatchMutationsSupplier<F>[] = [];
     if (exactMutators) {
-      const found = exactMutators.get(qc);
-      if (found) return everyMutator ? [found, everyMutator] : found;
+      const exactMatchFound = exactMutators.get(qc);
+      if (exactMatchFound) {
+        if (skipRegSearchExAfterExactMatch) {
+          return everyMutator
+            ? [exactMatchFound, everyMutator]
+            : exactMatchFound;
+        }
+        allMatches.push(exactMatchFound);
+      }
     }
     if (regExMutators) {
-      const found: LhcFormItemJsonPatchMutationsSupplier<F>[] = [];
       for (const [regExp, val] of regExMutators.entries()) {
-        if (qc.match(regExp)) found.push(val);
+        if (qc.match(regExp)) allMatches.push(val);
       }
-      if (found.length > 0) {
-        return everyMutator ? [...found, everyMutator] : found;
-      }
+    }
+    if (allMatches.length > 0) {
+      return everyMutator ? [...allMatches, everyMutator] : allMatches;
     }
     if (noMatchMutator) {
       const found = noMatchMutator(qc);
