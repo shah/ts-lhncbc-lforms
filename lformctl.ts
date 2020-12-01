@@ -33,6 +33,8 @@ export class LhcFormJsonTyper extends govnData.TypicalJsonTyper {
   }
 }
 
+// all CLI handlers are required to be async
+// deno-lint-ignore require-await
 export async function lhcFormJsonTyperCliHandler(
   ctx: govnData.CliCmdHandlerContext,
 ): Promise<true | void> {
@@ -47,7 +49,7 @@ export async function lhcFormJsonTyperCliHandler(
       ctx.calledFromMetaURL,
       {
         ...ctx.tco,
-        defaultJsonExtn: ".lch-form.auto.json",
+        defaultJsonExtn: ".lhc-form.auto.json",
         onAfterEmit: (result: govnData.StructuredDataTyperResult): void => {
           if (validate && govnData.isFileDestinationResult(result)) {
             const destRel = "." + path.SEP + result.destFileNameRel(Deno.cwd());
