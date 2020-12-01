@@ -3,6 +3,8 @@ import { inspect as insp } from "./deps.ts";
 import * as mod from "./inspect.ts";
 import type { NihLhcForm } from "./lform.ts";
 
+// This is passed into mod.lhcFormInspectionPipe, which expects async
+// deno-lint-ignore require-await
 export async function inspectForm(
   target: NihLhcForm | mod.LhcFormInspectionResult,
   ctx?: insp.InspectionContext | mod.LhcFormInspectionDiagnostics,
