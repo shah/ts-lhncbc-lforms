@@ -51,7 +51,7 @@ Deno.test(`mutate LHC Form values (for data migrations)`, () => {
         "/type",
       ]);
     },
-    mod.lchFormQuestionCodeMutationsSuppliers({
+    mod.lhcFormQuestionCodeMutationsSuppliers({
       questionCodesHierarchySearchKey: (...questionCodes: string[]): string => {
         return questionCodes.join("::");
       },

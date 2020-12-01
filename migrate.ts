@@ -102,7 +102,7 @@ export interface LhcFormItemFlexibleMutationsSuppliers<
     | undefined;
 }
 
-export interface LchFormQuestionCodeMutationsSuppliersOptions<
+export interface LhcFormQuestionCodeMutationsSuppliersOptions<
   F extends NihLhcForm,
 > {
   readonly questionCodesHierarchySearchKey: (
@@ -132,7 +132,7 @@ export interface LchFormQuestionCodeMutationsSuppliersOptions<
   ) => void;
 }
 
-export function lchFormQuestionCodeMutationsSuppliers<
+export function lhcFormQuestionCodeMutationsSuppliers<
   F extends NihLhcForm,
 >(
   {
@@ -143,7 +143,7 @@ export function lchFormQuestionCodeMutationsSuppliers<
     noMatchMutator,
     everyMutator,
     reportMatch,
-  }: LchFormQuestionCodeMutationsSuppliersOptions<F>,
+  }: LhcFormQuestionCodeMutationsSuppliersOptions<F>,
 ): LhcFormItemFlexibleMutationsSuppliers<F> {
   const undefinedQC = "[UNDEFINED]";
   const findQuesCodeMutSupplier = (qc: string):

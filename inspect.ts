@@ -1,7 +1,7 @@
 import { colors, inspect as insp } from "./deps.ts";
 import type * as lf from "./lform.ts";
 
-export interface LchFormInspector<F extends lf.NihLhcForm = lf.NihLhcForm>
+export interface LhcFormInspector<F extends lf.NihLhcForm = lf.NihLhcForm>
   extends insp.Inspector<F> {
   (
     target: F | LhcFormInspectionResult<F>,
@@ -38,7 +38,7 @@ export function isLhcFormInspectionIssue<
   return insp.isInspectionIssue<F>(o) && insp.isDiagnosable<string>(o);
 }
 
-export function lchFormIssue<F extends lf.NihLhcForm = lf.NihLhcForm>(
+export function lhcFormIssue<F extends lf.NihLhcForm = lf.NihLhcForm>(
   form: F,
   diagnostic: string | string[],
 ): LhcFormInspectionIssue<F> & insp.Diagnosable<string> {
@@ -62,7 +62,7 @@ export function isLhcFormItemInspectionIssue<
   return isLhcFormInspectionIssue<F>(o) && "item" in o;
 }
 
-export function lchFormItemIssue<
+export function lhcFormItemIssue<
   F extends lf.NihLhcForm = lf.NihLhcForm,
   I extends lf.FormItem = lf.FormItem,
 >(
@@ -72,7 +72,7 @@ export function lchFormItemIssue<
   ancestors?: lf.FormItem[],
 ): LhcFormItemInspectionIssue<F, I> & insp.Diagnosable<string> {
   return {
-    ...lchFormIssue(form, diagnostic),
+    ...lhcFormIssue(form, diagnostic),
     item: item,
     ancestors: ancestors,
   };
@@ -132,7 +132,7 @@ export class TypicalLhcFormInspectionDiags<
     target: F,
     diagnostic: string | string[],
   ): Promise<LhcFormInspectionResult<F>> {
-    return await this.onIssue(lchFormIssue<F>(target, diagnostic));
+    return await this.onIssue(lhcFormIssue<F>(target, diagnostic));
   }
 
   async onFormInspection<IR>(
@@ -157,7 +157,7 @@ export class TypicalLhcFormInspectionDiags<
     ancestors?: lf.FormItem[],
   ): Promise<LhcFormInspectionResult<F>> {
     return await this.onIssue(
-      lchFormItemIssue<F, I>(form, item, diagnostic, ancestors),
+      lhcFormItemIssue<F, I>(form, item, diagnostic, ancestors),
     );
   }
 
@@ -184,7 +184,7 @@ export class TypicalLhcFormInspectionDiags<
   }
 }
 
-export interface LchFormIssueDiagnosticPathSupplier<
+export interface LhcFormIssueDiagnosticPathSupplier<
   F extends lf.NihLhcForm = lf.NihLhcForm,
 > {
   (issue: insp.InspectionIssue<F>): string;
@@ -209,17 +209,17 @@ export function truncate(
     : subString) + suffix;
 }
 
-export interface LchFormIssueDiagnosticMessageSupplier<
+export interface LhcFormIssueDiagnosticMessageSupplier<
   F extends lf.NihLhcForm = lf.NihLhcForm,
 > {
   (
     issue: insp.InspectionIssue<F> & insp.Diagnosable<string>,
     diagnostic: string,
-    pathSupplier?: LchFormIssueDiagnosticPathSupplier,
+    pathSupplier?: LhcFormIssueDiagnosticPathSupplier,
   ): string;
 }
 
-export function defaultLchFormIssueDiagnosticPath<
+export function defaultLhcFormIssueDiagnosticPath<
   F extends lf.NihLhcForm = lf.NihLhcForm,
 >(issue: insp.InspectionIssue<F>): string | undefined {
   if (isLhcFormItemInspectionIssue<F>(issue)) {
@@ -238,19 +238,19 @@ export function defaultLhcFormIssueDiagnosticMessage<
 >(
   issue: insp.InspectionIssue<F> & insp.Diagnosable<string>,
   message: string,
-  pathSupplier?: LchFormIssueDiagnosticPathSupplier,
+  pathSupplier?: LhcFormIssueDiagnosticPathSupplier,
 ): string | undefined {
   if (isLhcFormItemInspectionIssue<F>(issue)) {
     const path = pathSupplier
       ? pathSupplier(issue)
-      : defaultLchFormIssueDiagnosticPath(issue);
+      : defaultLhcFormIssueDiagnosticPath(issue);
     return `[${path}] ${message}: ${truncate(issue.item.value, 55)}`;
   } else {
     return message;
   }
 }
 
-export function coloredLchFormIssueDiagnosticPath<
+export function coloredLhcFormIssueDiagnosticPath<
   F extends lf.NihLhcForm = lf.NihLhcForm,
 >(issue: insp.InspectionIssue<F>): string | undefined {
   if (isLhcFormItemInspectionIssue<F>(issue)) {
@@ -271,12 +271,12 @@ export function coloredLhcFormIssueDiagnosticMessage<
 >(
   issue: insp.InspectionIssue<F> & insp.Diagnosable<string>,
   message: string,
-  pathSupplier?: LchFormIssueDiagnosticPathSupplier,
+  pathSupplier?: LhcFormIssueDiagnosticPathSupplier,
 ): string | undefined {
   if (isLhcFormItemInspectionIssue<F>(issue)) {
     const path = pathSupplier
       ? pathSupplier(issue)
-      : coloredLchFormIssueDiagnosticPath(issue);
+      : coloredLhcFormIssueDiagnosticPath(issue);
     let inspName: string | undefined = undefined;
     if (insp.isInspectorProvenanceSupplier(issue)) {
       inspName = ` ${
@@ -320,7 +320,7 @@ export class ConsoleLhcFormInspectionDiags<
     target: F,
     diagnostic: string | string[],
   ): Promise<LhcFormInspectionResult<F>> {
-    return await this.onIssue(lchFormIssue<F>(target, diagnostic));
+    return await this.onIssue(lhcFormIssue<F>(target, diagnostic));
   }
 
   async onFormInspection<IR>(
@@ -345,7 +345,7 @@ export class ConsoleLhcFormInspectionDiags<
     ancestors?: lf.FormItem[],
   ): Promise<LhcFormInspectionResult<F>> {
     return await this.onIssue(
-      lchFormItemIssue<F, I>(form, item, diagnostic, ancestors),
+      lhcFormItemIssue<F, I>(form, item, diagnostic, ancestors),
     );
   }
 
@@ -384,7 +384,7 @@ export class DerivedLhcFormInspectionDiags<
     target: F,
     diagnostic: string | string[],
   ): Promise<LhcFormInspectionResult<F>> {
-    return await this.onIssue(lchFormIssue<F>(target, diagnostic));
+    return await this.onIssue(lhcFormIssue<F>(target, diagnostic));
   }
 
   async onFormInspection<IR>(
@@ -409,7 +409,7 @@ export class DerivedLhcFormInspectionDiags<
     ancestors?: lf.FormItem[],
   ): Promise<LhcFormInspectionResult<F>> {
     return await this.onIssue(
-      lchFormItemIssue<F, I>(form, item, diagnostic, ancestors),
+      lhcFormItemIssue<F, I>(form, item, diagnostic, ancestors),
     );
   }
 
