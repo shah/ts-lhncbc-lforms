@@ -14,13 +14,11 @@ function testFilePath(relTestFileName: string): string {
 }
 
 Deno.test(`mutate LHC Form values (for data migrations)`, () => {
-  const qcExactSuppliers = new Map<
-    string,
-    mod.LhcFormItemJsonPatchMutationsSupplier<NihLhcForm>
+  const qcExactSuppliers = new mod.FormItemJsonPatchMutationsSupplierTextMap<
+    NihLhcForm
   >();
-  const qcRegExSuppliers = new Map<
-    RegExp,
-    mod.LhcFormItemJsonPatchMutationsSupplier<NihLhcForm>
+  const qcRegExSuppliers = new mod.FormItemJsonPatchMutationsSupplierRegExMap<
+    NihLhcForm
   >();
   qcRegExSuppliers.set(/^002-01-01|002-01-02$/, (ctx) => {
     ctx.itemJPMS.removeValues(

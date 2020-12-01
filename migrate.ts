@@ -77,23 +77,55 @@ export interface LhcFormItemFlexibleMutationsSuppliers<
     | undefined;
 }
 
+export class FormItemJsonPatchMutationsSupplierTextMap<F extends NihLhcForm>
+  extends Map<
+    string,
+    | LhcFormItemJsonPatchMutationsSupplier<F>
+    | LhcFormItemJsonPatchMutationsSupplier<F>[]
+  > {
+  registerSupplier(
+    mapKeys: string | string[],
+    supplier: LhcFormItemJsonPatchMutationsSupplier<F>,
+  ) {
+    const addSupplier = (qc: string) => {
+      const exists = this.get(qc);
+      if (exists) {
+        if (Array.isArray(exists)) {
+          exists.push(supplier);
+        } else {
+          this.set(qc, [exists, supplier]);
+        }
+      } else {
+        this.set(qc, supplier);
+      }
+    };
+    if (typeof mapKeys === "string") {
+      addSupplier(mapKeys);
+    } else {
+      mapKeys.forEach((qc) => addSupplier(qc));
+    }
+  }
+}
+
+export class FormItemJsonPatchMutationsSupplierRegExMap<F extends NihLhcForm>
+  extends Map<RegExp, LhcFormItemJsonPatchMutationsSupplier<F>> {
+  registerSupplier(
+    key: RegExp,
+    supplier: LhcFormItemJsonPatchMutationsSupplier<F>,
+  ) {
+    this.set(key, supplier);
+  }
+}
+
 export interface LhcFormQuestionCodeMutationsSuppliersOptions<
   F extends NihLhcForm,
 > {
   readonly questionCodesHierarchySearchKey: (
     ...questionCodes: string[]
   ) => string;
-  readonly exactMutators?: Map<
-    string,
-    | LhcFormItemJsonPatchMutationsSupplier<F>
-    | LhcFormItemJsonPatchMutationsSupplier<F>[]
-  >;
+  readonly exactMutators?: FormItemJsonPatchMutationsSupplierTextMap<F>;
   readonly skipRegSearchExAfterExactMatch?: boolean;
-  readonly regExMutators?: Map<
-    RegExp,
-    | LhcFormItemJsonPatchMutationsSupplier<F>
-    | LhcFormItemJsonPatchMutationsSupplier<F>[]
-  >;
+  readonly regExMutators?: FormItemJsonPatchMutationsSupplierRegExMap<F>;
   readonly everyMutator?: LhcFormItemJsonPatchMutationsSupplier<F>;
   readonly noMatchMutator?: (
     questionCodeKey: string,
