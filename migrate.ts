@@ -2,31 +2,6 @@ import { jsonMutator as jm, jsonPatch as jp } from "./deps.ts";
 import { FormItem, ItemAnswer, NihLhcForm } from "./lform.ts";
 import { readLhcFormFileSync } from "./persist.ts";
 
-// export function lhcFormTopLevelItemMutationsSupplier(
-//   jpms: jm.JsonPatchMutationsSupplier,
-//   itemIndex: number,
-// ): jm.JsonPatchMutationsSupplier {
-//   return jm.jsonPatchAnchoredMutationsSupplier(
-//     jpms,
-//     (path: jm.JsonPointer): jm.JsonPointer => {
-//       return `/items/${itemIndex}/${path}`;
-//     },
-//   );
-// }
-
-// export function lhcFormSubItemMutationsSupplier(
-//   jpms: jm.JsonPatchMutationsSupplier,
-//   tlItemIndex: number,
-//   subItemIndex: number,
-// ): jm.JsonPatchMutationsSupplier {
-//   return jm.jsonPatchAnchoredMutationsSupplier(
-//     jpms,
-//     (path: jm.JsonPointer): jm.JsonPointer => {
-//       return `/items/${tlItemIndex}/items/${subItemIndex}/${path}`;
-//     },
-//   );
-// }
-
 export interface LhcFormMutationsSupplierContext<
   F extends NihLhcForm,
 > {
